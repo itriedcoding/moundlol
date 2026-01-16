@@ -1,29 +1,52 @@
 import { motion } from "framer-motion";
-import { Link, Plus, Zap, BarChart3, Sparkles, ArrowRight } from "lucide-react";
+import { Link as LinkIcon, Zap, BarChart3, Sparkles, ArrowRight } from "lucide-react";
+import {
+  FaTiktok, FaInstagram, FaTwitter, FaYoutube, FaTwitch,
+  FaWhatsapp, FaTelegram, FaDiscord, FaSpotify, FaLinkedin,
+  FaFacebook, FaSnapchat, FaReddit, FaGithub, FaPatreon
+} from "react-icons/fa";
+import { SiOnlyfans, SiSoundcloud } from "react-icons/si";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Landing() {
   const navigate = useNavigate();
-  const currentUser = useQuery(api.users.getCurrentUser);
+  const { user } = useAuth();
 
   const handleGetStarted = () => {
-    if (currentUser) {
+    if (user) {
       navigate("/dashboard");
     } else {
-      navigate("/auth");
+      navigate("/yourusername");
     }
   };
 
+  const platforms = [
+    { name: "TikTok", icon: FaTiktok, color: "#000000" },
+    { name: "Instagram", icon: FaInstagram, color: "#E4405F" },
+    { name: "Twitter", icon: FaTwitter, color: "#1DA1F2" },
+    { name: "YouTube", icon: FaYoutube, color: "#FF0000" },
+    { name: "Twitch", icon: FaTwitch, color: "#9146FF" },
+    { name: "OnlyFans", icon: SiOnlyfans, color: "#00AFF0" },
+    { name: "WhatsApp", icon: FaWhatsapp, color: "#25D366" },
+    { name: "Telegram", icon: FaTelegram, color: "#0088cc" },
+    { name: "Discord", icon: FaDiscord, color: "#5865F2" },
+    { name: "Spotify", icon: FaSpotify, color: "#1DB954" },
+    { name: "SoundCloud", icon: SiSoundcloud, color: "#ff8800" },
+    { name: "Patreon", icon: FaPatreon, color: "#FF424D" },
+    { name: "LinkedIn", icon: FaLinkedin, color: "#0077b5" },
+    { name: "Facebook", icon: FaFacebook, color: "#1877F2" },
+    { name: "Snapchat", icon: FaSnapchat, color: "#FFFC00" },
+    { name: "Reddit", icon: FaReddit, color: "#FF4500" },
+    { name: "GitHub", icon: FaGithub, color: "#333333" },
+  ];
+
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-primary/10" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,20,147,0.1),transparent_50%)]" />
 
-      {/* Animated background blobs */}
       <motion.div
         className="absolute top-20 left-10 w-96 h-96 bg-primary/20 rounded-full blur-3xl"
         animate={{
@@ -49,9 +72,7 @@ export default function Landing() {
         }}
       />
 
-      {/* Content */}
       <div className="relative z-10">
-        {/* Header */}
         <motion.header
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -66,11 +87,10 @@ export default function Landing() {
             variant="outline"
             className="border-primary text-primary hover:bg-primary hover:text-white"
           >
-            {currentUser ? "Dashboard" : "Sign In"}
+            {user ? "Dashboard" : "Get Started"}
           </Button>
         </motion.header>
 
-        {/* Hero Section */}
         <section className="container mx-auto px-4 py-20 md:py-32">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
@@ -125,7 +145,6 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* Features Section */}
         <section className="container mx-auto px-4 py-20">
           <motion.div
             initial={{ y: 20, opacity: 0 }}
@@ -144,7 +163,7 @@ export default function Landing() {
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {[
               {
-                icon: Link,
+                icon: LinkIcon,
                 title: "Unlimited Links",
                 description: "Add all your social profiles, websites, and content. No limits, no restrictions.",
               },
@@ -179,7 +198,6 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* Supported Platforms Section */}
         <section className="container mx-auto px-4 py-20">
           <motion.div
             initial={{ y: 20, opacity: 0 }}
@@ -203,24 +221,22 @@ export default function Landing() {
             viewport={{ once: true }}
             className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto"
           >
-            {["TikTok", "Instagram", "Twitter", "YouTube", "Twitch", "OnlyFans", "WhatsApp", "Telegram", "Discord", "Spotify", "SoundCloud", "Patreon"].map(
-              (platform, index) => (
-                <motion.div
-                  key={platform}
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                  viewport={{ once: true }}
-                  className="px-6 py-3 bg-card border border-border rounded-full hover:border-primary/50 transition-colors"
-                >
-                  <span className="font-medium">{platform}</span>
-                </motion.div>
-              )
-            )}
+            {platforms.map((platform, index) => (
+              <motion.div
+                key={platform.name}
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                viewport={{ once: true }}
+                className="flex items-center gap-3 px-6 py-3 bg-card border border-border rounded-full hover:border-primary/50 transition-colors group"
+              >
+                <platform.icon className="w-5 h-5 group-hover:scale-110 transition-transform" style={{ color: platform.color }} />
+                <span className="font-medium">{platform.name}</span>
+              </motion.div>
+            ))}
           </motion.div>
         </section>
 
-        {/* CTA Section */}
         <section className="container mx-auto px-4 py-20">
           <motion.div
             initial={{ y: 20, opacity: 0 }}
@@ -245,7 +261,6 @@ export default function Landing() {
           </motion.div>
         </section>
 
-        {/* Footer */}
         <footer className="container mx-auto px-4 py-8 text-center text-muted-foreground border-t border-border">
           <p>© 2024 mound.lol - Made with 💖 and code</p>
         </footer>
