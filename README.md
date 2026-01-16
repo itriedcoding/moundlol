@@ -255,3 +255,46 @@ When using convex, make sure:
 - This includes importing generated files like `@/convex/_generated/server`, `@/convex/_generated/api`
 - Remember to import functions like useQuery, useMutation, useAction, etc. from `convex/react`
 - NEVER have return type validators.
+
+---
+
+# Deployment
+
+## Deploy to Vercel
+
+This project is configured to deploy to [mound.lol](https://mound.lol) on Vercel.
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/mound.lol&env=VITE_CONVEX_URL&envDescription=Convex%20deployment%20URL&project-name=mound-lol&repository-name=mound-lol)
+
+### Deployment Steps
+
+1. Click the "Deploy with Vercel" button above
+2. Connect your GitHub account and import the repository
+3. Configure environment variables:
+   - `VITE_CONVEX_URL`: Your Convex deployment URL (from `npx convex dev`)
+4. Deploy and connect your custom domain `mound.lol` in Vercel settings
+
+### Environment Variables
+
+Required environment variables for production:
+- `VITE_CONVEX_URL`: Your Convex deployment URL
+
+### Post-Deployment
+
+After deploying to Vercel:
+1. Go to your Vercel project settings
+2. Add your custom domain `mound.lol`
+3. Configure DNS records to point to Vercel
+4. Update your Convex deployment with the production URL:
+   ```bash
+   npx convex deploy --prod
+   ```
+
+### Local Development
+
+To run locally:
+```bash
+pnpm install
+npx convex dev
+pnpm run dev
+```
