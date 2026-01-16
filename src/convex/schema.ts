@@ -18,10 +18,22 @@ export default defineSchema({
     ),
     isPublished: v.boolean(),
     viewCount: v.number(),
-    tokenIdentifier: v.string(),
+    sessionToken: v.string(), // Simple session token instead of auth
+    customDomain: v.optional(v.string()),
+    password: v.optional(v.string()), // For password-protected profiles
+    seoTitle: v.optional(v.string()),
+    seoDescription: v.optional(v.string()),
+    customCss: v.optional(v.string()),
+    backgroundType: v.optional(v.string()), // "solid", "gradient", "animated", "video"
+    backgroundValue: v.optional(v.string()),
+    buttonStyle: v.optional(v.string()), // "rounded", "square", "pill", "neumorphic"
+    font: v.optional(v.string()),
+    showSocialProof: v.optional(v.boolean()),
+    verified: v.optional(v.boolean()),
   })
     .index("by_username", ["username"])
-    .index("by_token", ["tokenIdentifier"]),
+    .index("by_session", ["sessionToken"])
+    .index("by_domain", ["customDomain"]),
 
   links: defineTable({
     userId: v.id("users"),
@@ -35,9 +47,16 @@ export default defineSchema({
     customIcon: v.optional(v.string()),
     scheduledStart: v.optional(v.number()),
     scheduledEnd: v.optional(v.number()),
+    thumbnail: v.optional(v.string()),
+    isPriority: v.optional(v.boolean()),
+    expiresAt: v.optional(v.number()),
+    category: v.optional(v.string()),
+    followerCount: v.optional(v.string()),
+    animation: v.optional(v.string()),
   })
     .index("by_user", ["userId"])
-    .index("by_user_and_order", ["userId", "order"]),
+    .index("by_user_and_order", ["userId", "order"])
+    .index("by_user_and_category", ["userId", "category"]),
 
   analytics: defineTable({
     userId: v.id("users"),
@@ -47,6 +66,9 @@ export default defineSchema({
     referrer: v.optional(v.string()),
     country: v.optional(v.string()),
     device: v.optional(v.string()),
+    utmSource: v.optional(v.string()),
+    utmMedium: v.optional(v.string()),
+    utmCampaign: v.optional(v.string()),
   })
     .index("by_user", ["userId"])
     .index("by_user_and_timestamp", ["userId", "timestamp"])
@@ -62,4 +84,13 @@ export default defineSchema({
     font: v.optional(v.string()),
     isActive: v.boolean(),
   }).index("by_user_and_active", ["userId", "isActive"]),
+
+  emailSubscribers: defineTable({
+    userId: v.id("users"),
+    email: v.string(),
+    subscribedAt: v.number(),
+    source: v.optional(v.string()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_email", ["email"]),
 });
