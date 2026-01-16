@@ -1,28 +1,25 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { ClaimUsername } from "@/components/ClaimUsername";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/use-auth";
 import {
   ExternalLink,
   Plus,
   Trash2,
   Eye,
   EyeOff,
-  GripVertical,
   BarChart3,
   Settings,
-  LogOut,
   Copy,
   Link as LinkIcon,
 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -57,9 +54,16 @@ const SOCIAL_PLATFORMS = [
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const currentUser = useQuery(api.users.getCurrentUser);
-  const myLinks = useQuery(api.links.getMyLinks);
-  const analytics = useQuery(api.analytics.getAnalytics, { range: "7d" });
+  const { user, sessionToken } = useAuth();
+
+  const myLinks = useQuery(
+    api.links.getMyLinks,
+    sessionToken ? { sessionToken } : "skip"
+  );
+  const analytics = useQuery(
+    api.analytics.getAnalytics,
+    sessionToken ? { sessionToken, range: "7d" } : "skip"
+  );
 
   const updateProfile = useMutation(api.users.updateProfile);
   const addLink = useMutation(api.links.addLink);
@@ -67,8 +71,8 @@ export default function Dashboard() {
   const deleteLink = useMutation(api.links.deleteLink);
 
   const [profileData, setProfileData] = useState({
-    title: currentUser?.title || "",
-    bio: currentUser?.bio || "",
+    title: "",
+    bio: "",
   });
   const [showAddLink, setShowAddLink] = useState(false);
   const [newLink, setNewLink] = useState({
@@ -77,7 +81,21 @@ export default function Dashboard() {
     url: "",
   });
 
-  if (currentUser === undefined || myLinks === undefined) {
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        title: user.title || "",
+        bio: user.bio || "",
+      });
+    }
+  }, [user]);
+
+  if (!sessionToken || !user) {
+    navigate("/yourusername");
+    return null;
+  }
+
+  if (myLinks === undefined || analytics === undefined) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin text-primary">Loading...</div>
@@ -85,20 +103,14 @@ export default function Dashboard() {
     );
   }
 
-  // Show username claiming if user doesn't have one
-  if (currentUser === null) {
-    navigate("/auth");
-    return null;
-  }
-
-  // Check if user needs to claim username (they're authenticated but no username)
-  if (!currentUser.username) {
-    return <ClaimUsername onSuccess={() => window.location.reload()} />;
-  }
-
   const handleSaveProfile = async () => {
+    if (!sessionToken) return;
     try {
-      await updateProfile(profileData);
+      await updateProfile({
+        sessionToken,
+        title: profileData.title,
+        bio: profileData.bio,
+      });
       toast.success("Profile updated!");
     } catch (error: any) {
       toast.error(error.message);
@@ -106,6 +118,7 @@ export default function Dashboard() {
   };
 
   const handleAddLink = async () => {
+    if (!sessionToken) return;
     if (!newLink.title || !newLink.url) {
       toast.error("Please fill in all fields");
       return;
@@ -114,6 +127,7 @@ export default function Dashboard() {
     try {
       const platform = SOCIAL_PLATFORMS.find((p) => p.value === newLink.platform);
       await addLink({
+        sessionToken,
         platform: newLink.platform,
         title: newLink.title,
         url: newLink.url,
@@ -128,18 +142,20 @@ export default function Dashboard() {
   };
 
   const handleToggleVisibility = async (linkId: string, isVisible: boolean) => {
+    if (!sessionToken) return;
     try {
-      await updateLink({ linkId: linkId as any, isVisible: !isVisible });
+      await updateLink({ sessionToken, linkId: linkId as any, isVisible: !isVisible });
     } catch (error: any) {
       toast.error(error.message);
     }
   };
 
   const handleDeleteLink = async (linkId: string) => {
+    if (!sessionToken) return;
     if (!confirm("Are you sure you want to delete this link?")) return;
 
     try {
-      await deleteLink({ linkId: linkId as any });
+      await deleteLink({ sessionToken, linkId: linkId as any });
       toast.success("Link deleted!");
     } catch (error: any) {
       toast.error(error.message);
@@ -147,7 +163,7 @@ export default function Dashboard() {
   };
 
   const copyProfileUrl = () => {
-    const url = `${window.location.origin}/${currentUser.username}`;
+    const url = `${window.location.origin}/${user.username}`;
     navigator.clipboard.writeText(url);
     toast.success("Link copied!");
   };
@@ -165,7 +181,7 @@ export default function Dashboard() {
             <h1 className="text-xl font-bold text-gradient-pink">mound.lol</h1>
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full text-sm">
               <span className="text-muted-foreground">mound.lol/</span>
-              <span className="text-primary font-semibold">{currentUser.username}</span>
+              <span className="text-primary font-semibold">{user.username}</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -181,7 +197,7 @@ export default function Dashboard() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => navigate(`/${currentUser.username}`)}
+              onClick={() => navigate(`/${user.username}`)}
             >
               <ExternalLink className="w-4 h-4 sm:mr-2" />
               <span className="hidden sm:inline">View Profile</span>
@@ -422,7 +438,7 @@ export default function Dashboard() {
                 <Button
                   variant="outline"
                   className="w-full justify-start"
-                  onClick={() => navigate(`/${currentUser.username}`)}
+                  onClick={() => navigate(`/${user.username}`)}
                 >
                   <ExternalLink className="w-4 h-4 mr-2" />
                   View Public Profile
