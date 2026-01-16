@@ -7,18 +7,33 @@ import {
 } from "react-icons/fa";
 import { SiOnlyfans, SiSoundcloud } from "react-icons/si";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
+import { useState } from "react";
 
 export default function Landing() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [username, setUsername] = useState("");
 
   const handleGetStarted = () => {
     if (user) {
       navigate("/dashboard");
     } else {
       navigate("/yourusername");
+    }
+  };
+
+  const handleClaimUsername = () => {
+    if (username.trim()) {
+      navigate(`/${username.trim()}`);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleClaimUsername();
     }
   };
 
@@ -128,19 +143,34 @@ export default function Landing() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+              className="flex flex-col gap-6 justify-center items-center max-w-2xl mx-auto"
             >
-              <Button
-                onClick={handleGetStarted}
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-white glow-pink text-lg px-8 py-6 group"
-              >
-                Claim Your Link
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <div className="text-sm text-muted-foreground">
-                mound.lol/<span className="text-primary font-semibold">yourname</span>
+              <div className="w-full max-w-lg">
+                <div className="flex flex-col sm:flex-row gap-3 p-2 bg-card border-2 border-primary/30 rounded-2xl glow-pink">
+                  <div className="flex items-center flex-1 px-4 py-3 bg-background/50 rounded-xl">
+                    <span className="text-muted-foreground mr-2">mound.lol/</span>
+                    <Input
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="yourname"
+                      className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto text-lg placeholder:text-muted-foreground/50"
+                    />
+                  </div>
+                  <Button
+                    onClick={handleClaimUsername}
+                    size="lg"
+                    disabled={!username.trim()}
+                    className="bg-primary hover:bg-primary/90 text-white text-lg px-8 group disabled:opacity-50"
+                  >
+                    Claim
+                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </div>
               </div>
+              <p className="text-sm text-muted-foreground">
+                Free forever • No credit card required • Set up in 30 seconds
+              </p>
             </motion.div>
           </div>
         </section>
