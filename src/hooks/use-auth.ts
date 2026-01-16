@@ -1,20 +1,18 @@
+import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useAuthActions } from "@convex-dev/auth/react";
-import { useConvexAuth, useQuery } from "convex/react";
+import { getSessionToken, hasSession } from "@/lib/session";
 
 export function useAuth() {
-  const { isLoading: isAuthLoading, isAuthenticated } = useConvexAuth();
-  const user = useQuery(api.users.getCurrentUser);
-  const { signIn, signOut } = useAuthActions();
-
-  // Derive isLoading directly from the dependencies instead of managing separate state
-  const isLoading = isAuthLoading || user === undefined;
+  const sessionToken = getSessionToken();
+  const user = useQuery(
+    api.users.getUserBySession,
+    sessionToken ? { sessionToken } : "skip"
+  );
 
   return {
-    isLoading,
-    isAuthenticated,
+    isLoading: user === undefined && hasSession(),
+    isAuthenticated: hasSession() && user !== null,
     user,
-    signIn,
-    signOut,
+    sessionToken,
   };
 }
