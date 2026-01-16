@@ -18,7 +18,8 @@ export default defineSchema({
     ),
     isPublished: v.boolean(),
     viewCount: v.number(),
-    sessionToken: v.string(), // Simple session token instead of auth
+    sessionToken: v.optional(v.string()), // Simple session token instead of auth
+    tokenIdentifier: v.optional(v.string()), // Legacy field for backwards compatibility
     customDomain: v.optional(v.string()),
     password: v.optional(v.string()), // For password-protected profiles
     seoTitle: v.optional(v.string()),

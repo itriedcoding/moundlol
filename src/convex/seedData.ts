@@ -9,7 +9,7 @@ export const seedTestData = internalMutation({
       email: "demo@mound.lol",
       title: "Demo User",
       bio: "This is a demo profile showcasing all the features of mound.lol!",
-      tokenIdentifier: "test_token_demo_user",
+      sessionToken: "test_session_demo_user",
       isPublished: true,
       viewCount: 42,
     });

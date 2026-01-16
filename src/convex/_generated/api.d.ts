@@ -9,9 +9,6 @@
  */
 
 import type * as analytics from "../analytics.js";
-import type * as auth from "../auth.js";
-import type * as auth_emailOtp from "../auth/emailOtp.js";
-import type * as http from "../http.js";
 import type * as links from "../links.js";
 import type * as seedData from "../seedData.js";
 import type * as users from "../users.js";
@@ -24,9 +21,6 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   analytics: typeof analytics;
-  auth: typeof auth;
-  "auth/emailOtp": typeof auth_emailOtp;
-  http: typeof http;
   links: typeof links;
   seedData: typeof seedData;
   users: typeof users;

@@ -1,11 +1,13 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const trackProfileView = mutation({
   args: {
     username: v.string(),
     referrer: v.optional(v.string()),
+    utmSource: v.optional(v.string()),
+    utmMedium: v.optional(v.string()),
+    utmCampaign: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const username = args.username.toLowerCase().trim();
@@ -21,21 +23,22 @@ export const trackProfileView = mutation({
       type: "profile_view",
       timestamp: Date.now(),
       referrer: args.referrer,
+      utmSource: args.utmSource,
+      utmMedium: args.utmMedium,
+      utmCampaign: args.utmCampaign,
     });
   },
 });
 
 export const getAnalytics = query({
   args: {
-    range: v.optional(v.string()), // "7d", "30d", "all"
+    sessionToken: v.string(),
+    range: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const user = await ctx.db
       .query("users")
-      .withIndex("by_token", (q) => q.eq("tokenIdentifier", userId))
+      .withIndex("by_session", (q) => q.eq("sessionToken", args.sessionToken))
       .unique();
 
     if (!user) return null;
@@ -59,7 +62,6 @@ export const getAnalytics = query({
     const profileViews = analytics.filter((a) => a.type === "profile_view").length;
     const linkClicks = analytics.filter((a) => a.type === "link_click").length;
 
-    // Get click counts per link
     const linkClickCounts: Record<string, number> = {};
     for (const event of analytics) {
       if (event.type === "link_click" && event.linkId) {
@@ -68,12 +70,75 @@ export const getAnalytics = query({
       }
     }
 
+    // UTM analytics
+    const utmSources: Record<string, number> = {};
+    analytics.forEach((a) => {
+      if (a.utmSource) {
+        utmSources[a.utmSource] = (utmSources[a.utmSource] || 0) + 1;
+      }
+    });
+
     return {
       profileViews,
       linkClicks,
       totalViews: user.viewCount,
       linkClickCounts,
+      utmSources,
       analytics,
     };
+  },
+});
+
+export const addEmailSubscriber = mutation({
+  args: {
+    username: v.string(),
+    email: v.string(),
+    source: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_username", (q) => q.eq("username", args.username))
+      .unique();
+
+    if (!user) throw new Error("User not found");
+
+    // Check if email already subscribed
+    const existing = await ctx.db
+      .query("emailSubscribers")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .unique();
+
+    if (existing) {
+      throw new Error("Email already subscribed");
+    }
+
+    await ctx.db.insert("emailSubscribers", {
+      userId: user._id,
+      email: args.email,
+      subscribedAt: Date.now(),
+      source: args.source,
+    });
+
+    return { success: true };
+  },
+});
+
+export const getEmailSubscribers = query({
+  args: { sessionToken: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_session", (q) => q.eq("sessionToken", args.sessionToken))
+      .unique();
+
+    if (!user) return [];
+
+    const subscribers = await ctx.db
+      .query("emailSubscribers")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+
+    return subscribers;
   },
 });
