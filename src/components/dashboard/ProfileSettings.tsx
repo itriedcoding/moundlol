@@ -2,10 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Settings, Image as ImageIcon, Music, Palette, Lock } from "lucide-react";
+import { Settings, Image as ImageIcon, Music, Palette, Lock, Type } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
@@ -20,6 +20,8 @@ interface ProfileSettingsProps {
 export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
   const updateProfile = useMutation(api.users.updateProfile);
   const unlinkDiscord = useMutation(api.users.unlinkDiscordAccount);
+  const discordClientId = useQuery(api.users.getDiscordClientId);
+  
   const [profileData, setProfileData] = useState({
     title: "",
     bio: "",
@@ -27,6 +29,7 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
     backgroundType: "solid",
     backgroundValue: "#000000",
     buttonStyle: "rounded",
+    font: "sans",
     audioUrl: "",
     audioAutoPlay: false,
   });
@@ -40,6 +43,7 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
         backgroundType: user.backgroundType || "solid",
         backgroundValue: user.backgroundValue || "#000000",
         buttonStyle: user.buttonStyle || "rounded",
+        font: user.font || "sans",
         audioUrl: user.audioUrl || "",
         audioAutoPlay: user.audioAutoPlay || false,
       });
@@ -59,7 +63,11 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
   };
 
   const handleDiscordLogin = () => {
-    const clientId = "1458362723959181435";
+    const clientId = discordClientId;
+    if (!clientId) {
+        toast.error("Discord Client ID not configured");
+        return;
+    }
     const redirectUri = window.location.origin + "/auth/discord/callback";
     const scope = "identify";
     const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${scope}`;
@@ -218,6 +226,26 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
               </Select>
             </div>
           </div>
+          
+          <div>
+            <Label className="text-muted-foreground">Font Family</Label>
+            <Select
+                value={profileData.font}
+                onValueChange={(value) => setProfileData({ ...profileData, font: value })}
+            >
+                <SelectTrigger className="mt-2 bg-black/20 border-white/10">
+                    <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="sans">Sans Serif (Inter)</SelectItem>
+                    <SelectItem value="serif">Serif (Merriweather)</SelectItem>
+                    <SelectItem value="mono">Monospace (JetBrains Mono)</SelectItem>
+                    <SelectItem value="display">Display (Oswald)</SelectItem>
+                    <SelectItem value="handwriting">Handwriting (Caveat)</SelectItem>
+                </SelectContent>
+            </Select>
+          </div>
+
           <div>
             <Label htmlFor="bgValue" className="text-muted-foreground">
               {profileData.backgroundType === "image" ? "Image URL" : "Color / Gradient"}

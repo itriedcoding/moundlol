@@ -6,6 +6,13 @@ function generateSessionToken() {
   return Math.random().toString(36).substring(2) + Date.now().toString(36);
 }
 
+export const getDiscordClientId = query({
+  args: {},
+  handler: async () => {
+    return process.env.DISCORD_CLIENT_ID;
+  },
+});
+
 export const checkUsername = query({
   args: { username: v.string() },
   handler: async (ctx, args) => {

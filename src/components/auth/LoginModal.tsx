@@ -3,6 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { FaDiscord } from "react-icons/fa";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -10,8 +12,14 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
+  const discordClientId = useQuery(api.users.getDiscordClientId);
+
   const handleDiscordLogin = () => {
-    const clientId = "1458362723959181435";
+    const clientId = discordClientId;
+    if (!clientId) {
+      toast.error("Discord Client ID not configured in backend");
+      return;
+    }
     const redirectUri = window.location.origin + "/auth/discord/callback";
     const scope = "identify";
     const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${scope}`;

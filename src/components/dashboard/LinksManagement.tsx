@@ -20,9 +20,9 @@ import {
   SiOnlyfans, SiSoundcloud, SiCashapp, SiVenmo, SiKofi,
   SiBuymeacoffee, SiSubstack, SiX, SiKick
 } from "react-icons/si";
-import { Globe, Mail, Link as LinkIcon, Plus, Eye, EyeOff, Trash2 } from "lucide-react";
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { Globe, Mail, Link as LinkIcon, Plus, Eye, EyeOff, Trash2, GripVertical, ExternalLink } from "lucide-react";
+import { motion, Reorder } from "framer-motion";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
@@ -73,13 +73,32 @@ export function LinksManagement({ sessionToken }: LinksManagementProps) {
   const addLink = useMutation(api.links.addLink);
   const updateLink = useMutation(api.links.updateLink);
   const deleteLink = useMutation(api.links.deleteLink);
+  const reorderLinks = useMutation(api.links.reorderLinks);
 
   const [showAddLink, setShowAddLink] = useState(false);
+  const [localLinks, setLocalLinks] = useState<any[]>([]);
   const [newLink, setNewLink] = useState({
     platform: "custom",
     title: "",
     url: "",
   });
+
+  useEffect(() => {
+    if (myLinks) {
+      setLocalLinks(myLinks);
+    }
+  }, [myLinks]);
+
+  const handleReorder = async (newOrder: any[]) => {
+    setLocalLinks(newOrder);
+    const linkIds = newOrder.map(link => link._id);
+    try {
+        await reorderLinks({ sessionToken, linkIds });
+    } catch (error) {
+        console.error("Failed to reorder links", error);
+        toast.error("Failed to save link order");
+    }
+  };
 
   const handleAddLink = async () => {
     if (!newLink.title || !newLink.url) {
@@ -215,15 +234,21 @@ export function LinksManagement({ sessionToken }: LinksManagementProps) {
             <p className="text-sm">Add your first link to get started!</p>
           </div>
         )}
-        {myLinks?.map((link) => {
+        
+        <Reorder.Group axis="y" values={localLinks} onReorder={handleReorder} className="space-y-3">
+        {localLinks.map((link) => {
           const platformDef = SOCIAL_PLATFORMS.find(p => p.value === link.platform) || SOCIAL_PLATFORMS.find(p => p.value === "custom");
           return (
-            <motion.div
+            <Reorder.Item
               key={link._id}
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="flex items-center gap-4 p-4 bg-black/20 rounded-2xl border border-white/5 hover:border-primary/30 transition-all group hover:bg-black/30"
+              value={link}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center gap-4 p-4 bg-black/20 rounded-2xl border border-white/5 hover:border-primary/30 transition-all group hover:bg-black/30 cursor-grab active:cursor-grabbing"
             >
+              <div className="text-white/20 group-hover:text-white/50 cursor-grab active:cursor-grabbing">
+                <GripVertical className="w-5 h-5" />
+              </div>
               <div 
                 className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-transform group-hover:scale-110"
                 style={{ 
@@ -265,9 +290,10 @@ export function LinksManagement({ sessionToken }: LinksManagementProps) {
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
-            </motion.div>
+            </Reorder.Item>
           );
         })}
+        </Reorder.Group>
       </div>
     </motion.div>
   );
