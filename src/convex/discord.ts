@@ -258,7 +258,22 @@ export const discordAuth = action({
 
         if (!tokenResponse.ok) {
             const text = await tokenResponse.text();
-            throw new Error(`Failed to exchange code: ${text}`);
+            console.error("Discord OAuth Error:", text);
+            
+            let errorMessage = `Failed to exchange code: ${text}`;
+            try {
+                const errorData = JSON.parse(text);
+                if (errorData.error === 'invalid_client') {
+                    errorMessage = "Configuration Error: Invalid Discord Client ID or Client Secret. Please check your Convex Dashboard Environment Variables.";
+                } else if (errorData.error === 'invalid_grant') {
+                    errorMessage = "Authorization Error: Invalid or expired code. Please try again.";
+                } else if (errorData.error === 'redirect_uri_mismatch') {
+                    errorMessage = `Configuration Error: Redirect URI mismatch. Ensure '${args.redirectUri}' is added to your Discord Developer Portal.`;
+                }
+            } catch (e) {
+                // ignore
+            }
+            throw new Error(errorMessage);
         }
 
         const tokenData = await tokenResponse.json();
