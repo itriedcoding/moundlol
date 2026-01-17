@@ -238,10 +238,10 @@ export const registerCommands = internalAction({
 export const discordAuth = action({
     args: { code: v.string(), redirectUri: v.string() },
     handler: async (ctx, args) => {
-        const clientId = process.env.DISCORD_CLIENT_ID || "1458362723959181435";
-        const clientSecret = process.env.DISCORD_CLIENT_SECRET || "of8ZUQkMoxMl3Noy38lbYUrMbpK1MQkU";
+        const clientId = process.env.DISCORD_CLIENT_ID;
+        const clientSecret = process.env.DISCORD_CLIENT_SECRET;
 
-        if (!clientId || !clientSecret) throw new Error("Missing Discord OAuth credentials");
+        if (!clientId || !clientSecret) throw new Error("Missing Discord OAuth credentials in environment variables");
 
         // Exchange code for token
         const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {

@@ -1,2 +1,1 @@
-    npx convex run discord:registerCommands
-    
+npx convex env set DISCORD_CLIENT_ID 1458362723959181435 && npx convex env set DISCORD_CLIENT_SECRET 3GnGqHkSZNws7PG-iAsFEmRlVRpQ9uhM
