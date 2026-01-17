@@ -123,21 +123,23 @@ export function LinksManagement({ sessionToken }: LinksManagementProps) {
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.2 }}
-      className="bg-card border border-border rounded-2xl p-6"
+      className="bg-card/30 backdrop-blur-xl border border-white/10 rounded-3xl p-8"
     >
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <LinkIcon className="w-6 h-6 text-primary" />
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-2xl font-bold flex items-center gap-3">
+          <div className="p-2 bg-green-500/10 rounded-lg">
+            <LinkIcon className="w-5 h-5 text-green-400" />
+          </div>
           Your Links
         </h2>
         <Dialog open={showAddLink} onOpenChange={setShowAddLink}>
           <DialogTrigger asChild>
-            <Button className="bg-primary hover:bg-primary/90 text-white">
+            <Button className="bg-white text-black hover:bg-white/90 font-semibold rounded-xl">
               <Plus className="w-4 h-4 mr-2" />
               Add Link
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="bg-black/90 border-white/10 backdrop-blur-xl">
             <DialogHeader>
               <DialogTitle>Add New Link</DialogTitle>
             </DialogHeader>
@@ -150,13 +152,15 @@ export function LinksManagement({ sessionToken }: LinksManagementProps) {
                     setNewLink({ ...newLink, platform: value })
                   }
                 >
-                  <SelectTrigger className="mt-2">
+                  <SelectTrigger className="mt-2 bg-white/5 border-white/10">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {SOCIAL_PLATFORMS.map((platform) => (
                       <SelectItem key={platform.value} value={platform.value}>
-                        {platform.icon} {platform.label}
+                        <div className="flex items-center gap-2">
+                          {platform.icon} {platform.label}
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -171,7 +175,7 @@ export function LinksManagement({ sessionToken }: LinksManagementProps) {
                     setNewLink({ ...newLink, title: e.target.value })
                   }
                   placeholder="My Awesome Link"
-                  className="mt-2"
+                  className="mt-2 bg-white/5 border-white/10"
                 />
               </div>
               <div>
@@ -183,12 +187,12 @@ export function LinksManagement({ sessionToken }: LinksManagementProps) {
                     setNewLink({ ...newLink, url: e.target.value })
                   }
                   placeholder="https://..."
-                  className="mt-2"
+                  className="mt-2 bg-white/5 border-white/10"
                 />
               </div>
               <Button
                 onClick={handleAddLink}
-                className="w-full bg-primary hover:bg-primary/90 text-white"
+                className="w-full bg-white text-black hover:bg-white/90"
               >
                 Add Link
               </Button>
@@ -199,9 +203,12 @@ export function LinksManagement({ sessionToken }: LinksManagementProps) {
 
       <div className="space-y-3">
         {myLinks && myLinks.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            <LinkIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p>No links yet. Add your first link to get started!</p>
+          <div className="text-center py-16 text-muted-foreground border-2 border-dashed border-white/5 rounded-2xl">
+            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+              <LinkIcon className="w-8 h-8 opacity-50" />
+            </div>
+            <p className="text-lg font-medium text-white">No links yet</p>
+            <p className="text-sm">Add your first link to get started!</p>
           </div>
         )}
         {myLinks?.map((link) => {
@@ -211,37 +218,39 @@ export function LinksManagement({ sessionToken }: LinksManagementProps) {
               key={link._id}
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="flex items-center gap-3 p-4 bg-muted/50 rounded-xl border border-border hover:border-primary/50 transition-colors group"
+              className="flex items-center gap-4 p-4 bg-black/20 rounded-2xl border border-white/5 hover:border-primary/30 transition-all group hover:bg-black/30"
             >
-              <div className="text-2xl text-primary">
+              <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-2xl text-white group-hover:scale-110 transition-transform">
                 {platformDef?.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-semibold truncate">{link.title}</div>
+                <div className="font-semibold truncate text-white">{link.title}</div>
                 <div className="text-sm text-muted-foreground truncate">
                   {link.url}
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">
+                <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                  <Eye className="w-3 h-3" />
                   {link.clickCount} clicks
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="icon"
                   onClick={() => handleToggleVisibility(link._id, link.isVisible)}
+                  className="hover:bg-white/10"
                 >
                   {link.isVisible ? (
-                    <Eye className="w-4 h-4" />
+                    <Eye className="w-4 h-4 text-green-400" />
                   ) : (
-                    <EyeOff className="w-4 h-4" />
+                    <EyeOff className="w-4 h-4 text-muted-foreground" />
                   )}
                 </Button>
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="icon"
                   onClick={() => handleDeleteLink(link._id)}
-                  className="text-destructive hover:text-destructive"
+                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>

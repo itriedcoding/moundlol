@@ -61,16 +61,18 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.1 }}
-      className="bg-card border border-border rounded-2xl p-6 space-y-8"
+      className="bg-card/30 backdrop-blur-xl border border-white/10 rounded-3xl p-8 space-y-8"
     >
       <div>
-        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <Settings className="w-6 h-6 text-primary" />
+        <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <Settings className="w-5 h-5 text-primary" />
+          </div>
           Profile Settings
         </h2>
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div>
-            <Label htmlFor="title">Display Name</Label>
+            <Label htmlFor="title" className="text-muted-foreground">Display Name</Label>
             <Input
               id="title"
               value={profileData.title}
@@ -78,11 +80,11 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
                 setProfileData({ ...profileData, title: e.target.value })
               }
               placeholder="Your Name"
-              className="mt-2"
+              className="mt-2 bg-black/20 border-white/10 focus:border-primary/50"
             />
           </div>
           <div>
-            <Label htmlFor="bio">Bio</Label>
+            <Label htmlFor="bio" className="text-muted-foreground">Bio</Label>
             <Textarea
               id="bio"
               value={profileData.bio}
@@ -90,12 +92,11 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
                 setProfileData({ ...profileData, bio: e.target.value })
               }
               placeholder="Tell people about yourself..."
-              className="mt-2"
-              rows={3}
+              className="mt-2 bg-black/20 border-white/10 focus:border-primary/50 min-h-[100px]"
             />
           </div>
           <div>
-            <Label htmlFor="pfp">Profile Picture URL</Label>
+            <Label htmlFor="pfp" className="text-muted-foreground">Profile Picture URL</Label>
             <div className="flex gap-4 mt-2">
               <Input
                 id="pfp"
@@ -104,9 +105,10 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
                   setProfileData({ ...profileData, profilePicture: e.target.value })
                 }
                 placeholder="https://..."
+                className="bg-black/20 border-white/10 focus:border-primary/50"
               />
               {profileData.profilePicture && (
-                <div className="w-10 h-10 rounded-full overflow-hidden border border-border shrink-0">
+                <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10 shrink-0 ring-2 ring-primary/20">
                   <img src={profileData.profilePicture} alt="Preview" className="w-full h-full object-cover" />
                 </div>
               )}
@@ -115,20 +117,22 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
         </div>
       </div>
 
-      <div className="pt-6 border-t border-border">
-        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-          <Palette className="w-5 h-5 text-primary" />
+      <div className="pt-8 border-t border-white/5">
+        <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+          <div className="p-2 bg-purple-500/10 rounded-lg">
+            <Palette className="w-5 h-5 text-purple-400" />
+          </div>
           Appearance
         </h2>
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-5">
+          <div className="grid grid-cols-2 gap-6">
             <div>
-              <Label>Background Type</Label>
+              <Label className="text-muted-foreground">Background Type</Label>
               <Select
                 value={profileData.backgroundType}
                 onValueChange={(value) => setProfileData({ ...profileData, backgroundType: value })}
               >
-                <SelectTrigger className="mt-2">
+                <SelectTrigger className="mt-2 bg-black/20 border-white/10">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -139,12 +143,12 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
               </Select>
             </div>
             <div>
-              <Label>Button Style</Label>
+              <Label className="text-muted-foreground">Button Style</Label>
               <Select
                 value={profileData.buttonStyle}
                 onValueChange={(value) => setProfileData({ ...profileData, buttonStyle: value })}
               >
-                <SelectTrigger className="mt-2">
+                <SelectTrigger className="mt-2 bg-black/20 border-white/10">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -158,7 +162,7 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
             </div>
           </div>
           <div>
-            <Label htmlFor="bgValue">
+            <Label htmlFor="bgValue" className="text-muted-foreground">
               {profileData.backgroundType === "image" ? "Image URL" : "Color / Gradient"}
             </Label>
             <Input
@@ -168,20 +172,22 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
                 setProfileData({ ...profileData, backgroundValue: e.target.value })
               }
               placeholder={profileData.backgroundType === "image" ? "https://..." : "#000000 or linear-gradient(...)"}
-              className="mt-2"
+              className="mt-2 bg-black/20 border-white/10 focus:border-primary/50"
             />
           </div>
         </div>
       </div>
 
-      <div className="pt-6 border-t border-border">
-        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-          <Music className="w-5 h-5 text-primary" />
+      <div className="pt-8 border-t border-white/5">
+        <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+          <div className="p-2 bg-blue-500/10 rounded-lg">
+            <Music className="w-5 h-5 text-blue-400" />
+          </div>
           Audio
         </h2>
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div>
-            <Label htmlFor="audio">Background Audio URL (MP3)</Label>
+            <Label htmlFor="audio" className="text-muted-foreground">Background Audio URL (MP3)</Label>
             <Input
               id="audio"
               value={profileData.audioUrl}
@@ -189,11 +195,11 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
                 setProfileData({ ...profileData, audioUrl: e.target.value })
               }
               placeholder="https://.../song.mp3"
-              className="mt-2"
+              className="mt-2 bg-black/20 border-white/10 focus:border-primary/50"
             />
           </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="autoplay">Autoplay Audio</Label>
+          <div className="flex items-center justify-between p-4 bg-black/20 rounded-xl border border-white/5">
+            <Label htmlFor="autoplay" className="cursor-pointer">Autoplay Audio</Label>
             <Switch
               id="autoplay"
               checked={profileData.audioAutoPlay}
@@ -207,7 +213,7 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
 
       <Button
         onClick={handleSaveProfile}
-        className="w-full bg-primary hover:bg-primary/90 text-white"
+        className="w-full bg-white text-black hover:bg-white/90 font-bold h-12 rounded-xl"
         size="lg"
       >
         Save Changes
