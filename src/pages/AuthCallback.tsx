@@ -1,9 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useAction, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 import { getSessionToken, setSessionToken } from "@/lib/session";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle } from "lucide-react";
 
 export default function AuthCallback() {
   const [searchParams] = useSearchParams();
@@ -12,6 +14,7 @@ export default function AuthCallback() {
   const linkDiscord = useMutation(api.users.linkDiscordAccount);
   const loginWithDiscord = useMutation(api.users.loginWithDiscord);
   const processed = useRef(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (processed.current) return;
@@ -58,22 +61,53 @@ export default function AuthCallback() {
         }
       } catch (error: any) {
         console.error(error);
-        // Display the full error message received from the server
-        // This ensures the user sees the detailed configuration error if present.
-        toast.error(`Error connecting Discord: ${error.message || "Unknown error"}`, { duration: 10000 });
-        navigate("/");
+        // Set error state to display persistent UI
+        setError(error.message || "Unknown error occurred during Discord connection.");
       }
     };
 
     handleAuth();
   }, [searchParams, navigate, discordAuth, linkDiscord, loginWithDiscord]);
 
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white p-4">
+        <div className="max-w-lg w-full bg-red-950/30 border border-red-500/30 rounded-2xl p-8 text-center backdrop-blur-xl">
+          <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertTriangle className="w-8 h-8 text-red-500" />
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-4">Connection Failed</h3>
+          <div className="bg-black/40 rounded-lg p-4 mb-8 text-left overflow-auto max-h-60 border border-white/5">
+            <p className="text-sm font-mono text-red-200 whitespace-pre-wrap break-words leading-relaxed">
+              {error}
+            </p>
+          </div>
+          <div className="flex gap-4 justify-center">
+            <Button 
+                onClick={() => navigate("/")}
+                variant="outline"
+                className="border-white/10 hover:bg-white/5 text-white"
+            >
+                Return Home
+            </Button>
+            <Button 
+                onClick={() => window.location.reload()}
+                className="bg-red-600 hover:bg-red-700 text-white"
+            >
+                Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white">
       <div className="text-center">
         <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p className="text-muted-foreground">Connecting to Discord...</p>
-        <p className="text-xs text-muted-foreground mt-4\">Please wait while we verify your account.</p>
+        <p className="text-xs text-muted-foreground mt-4">Please wait while we verify your account.</p>
       </div>
     </div>
   );

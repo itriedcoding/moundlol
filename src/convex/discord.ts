@@ -247,7 +247,11 @@ export const discordAuth = action({
         const clientId = cleanEnv(process.env.DISCORD_CLIENT_ID);
         const clientSecret = cleanEnv(process.env.DISCORD_CLIENT_SECRET);
 
-        if (!clientId || !clientSecret) throw new Error("Configuration Error: Missing Discord OAuth credentials. Please set DISCORD_CLIENT_ID and DISCORD_CLIENT_SECRET in your Convex Dashboard.");
+        if (!clientId || !clientSecret) {
+            throw new Error("Configuration Error: Missing DISCORD_CLIENT_ID or DISCORD_CLIENT_SECRET in Convex Dashboard.");
+        }
+
+        console.log(`[Discord Auth] Exchanging code with Client ID: ${clientId.substring(0, 4)}... (Length: ${clientId.length})`);
 
         // Exchange code for token
         const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
@@ -264,17 +268,28 @@ export const discordAuth = action({
 
         if (!tokenResponse.ok) {
             const text = await tokenResponse.text();
-            console.error("Discord OAuth Error:", text);
+            console.error("Discord OAuth Error Response:", text);
             
             let errorMessage = `Failed to exchange code: ${text}`;
             try {
                 const errorData = JSON.parse(text);
                 if (errorData.error === 'invalid_client') {
-                    errorMessage = "Configuration Error: The Discord Client Secret in your Convex Dashboard is invalid or does not match the Client ID. Please check your Integrations tab.";
+                    errorMessage = `Configuration Error: Discord rejected the Client Credentials.\n\n` +
+                        `DEBUG INFO:\n` +
+                        `- Used Client ID Length: ${clientId.length}\n` +
+                        `- Used Client Secret Length: ${clientSecret.length}\n\n` +
+                        `CHECKLIST:\n` +
+                        `1. Ensure 'DISCORD_CLIENT_SECRET' in Convex Dashboard matches 'Client Secret' in Discord Dev Portal > OAuth2.\n` +
+                        `   (Do NOT use the 'Public Key' or 'Bot Token')\n` +
+                        `2. Ensure 'DISCORD_CLIENT_ID' matches 'Application ID'.\n` +
+                        `3. Did you set these in the Convex Dashboard? (.env files are NOT automatically pushed to the cloud backend)\n` +
+                        `4. Try resetting the Client Secret in Discord and updating it in Convex.`;
                 } else if (errorData.error === 'invalid_grant') {
-                    errorMessage = "Authorization Error: Invalid or expired code. Please try again.";
+                    errorMessage = "Authorization Error: The code is invalid or expired. Please try logging in again.";
                 } else if (errorData.error === 'redirect_uri_mismatch') {
-                    errorMessage = `Configuration Error: Redirect URI mismatch. Ensure '${args.redirectUri}' is added to your Discord Developer Portal.`;
+                    errorMessage = `Configuration Error: Redirect URI mismatch.\n` +
+                        `Expected: ${args.redirectUri}\n` +
+                        `Action: Add this EXACT URL to 'Redirects' in Discord Dev Portal > OAuth2.`;
                 }
             } catch (e) {
                 // ignore
