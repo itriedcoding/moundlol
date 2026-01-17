@@ -39,6 +39,7 @@ export default defineSchema({
     discordBanner: v.optional(v.string()),
     discordBannerColor: v.optional(v.string()),
     discordAccentColor: v.optional(v.string()),
+    discordPublicFlags: v.optional(v.number()),
     showDiscordPresence: v.optional(v.boolean()),
     email: v.optional(v.string()),
     // New Features

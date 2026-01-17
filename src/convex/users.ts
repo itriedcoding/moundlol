@@ -246,6 +246,7 @@ export const linkDiscordAccount = mutation({
     discordGlobalName: v.optional(v.string()),
     discordBanner: v.optional(v.string()),
     discordAccentColor: v.optional(v.string()),
+    discordPublicFlags: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db
@@ -272,6 +273,7 @@ export const linkDiscordAccount = mutation({
       discordAvatar: args.discordAvatar,
       discordBanner: args.discordBanner,
       discordAccentColor: args.discordAccentColor ? `#${Number(args.discordAccentColor).toString(16)}` : undefined,
+      discordPublicFlags: args.discordPublicFlags,
       showDiscordPresence: true, // Default to true
     });
 

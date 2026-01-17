@@ -1,15 +1,52 @@
 import { motion } from "framer-motion";
 import { BadgeCheck } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ProfileHeaderProps {
   user: any;
   badges: any[];
 }
 
+// Discord Badge Flags
+const DISCORD_FLAGS = {
+  STAFF: 1 << 0,
+  PARTNER: 1 << 1,
+  HYPESQUAD: 1 << 2,
+  BUG_HUNTER_LEVEL_1: 1 << 3,
+  HYPESQUAD_ONLINE_HOUSE_1: 1 << 6, // Bravery
+  HYPESQUAD_ONLINE_HOUSE_2: 1 << 7, // Brilliance
+  HYPESQUAD_ONLINE_HOUSE_3: 1 << 8, // Balance
+  PREMIUM_EARLY_SUPPORTER: 1 << 9,
+  TEAM_PSEUDO_USER: 1 << 10,
+  BUG_HUNTER_LEVEL_2: 1 << 14,
+  VERIFIED_BOT: 1 << 16,
+  VERIFIED_DEVELOPER: 1 << 17,
+  CERTIFIED_MODERATOR: 1 << 18,
+  BOT_HTTP_INTERACTIONS: 1 << 19,
+  ACTIVE_DEVELOPER: 1 << 22,
+};
+
+const getDiscordBadges = (flags: number) => {
+  const badges = [];
+  if (flags & DISCORD_FLAGS.STAFF) badges.push({ name: "Discord Staff", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/discordstaff.svg" });
+  if (flags & DISCORD_FLAGS.PARTNER) badges.push({ name: "Partnered Server Owner", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/discordpartner.svg" });
+  if (flags & DISCORD_FLAGS.HYPESQUAD) badges.push({ name: "HypeSquad Events", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/hypesquad.svg" });
+  if (flags & DISCORD_FLAGS.BUG_HUNTER_LEVEL_1) badges.push({ name: "Bug Hunter Level 1", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/bughunter1.svg" });
+  if (flags & DISCORD_FLAGS.HYPESQUAD_ONLINE_HOUSE_1) badges.push({ name: "HypeSquad Bravery", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/hypesquadbravery.svg" });
+  if (flags & DISCORD_FLAGS.HYPESQUAD_ONLINE_HOUSE_2) badges.push({ name: "HypeSquad Brilliance", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/hypesquadbrilliance.svg" });
+  if (flags & DISCORD_FLAGS.HYPESQUAD_ONLINE_HOUSE_3) badges.push({ name: "HypeSquad Balance", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/hypesquadbalance.svg" });
+  if (flags & DISCORD_FLAGS.PREMIUM_EARLY_SUPPORTER) badges.push({ name: "Early Supporter", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/earlysupporter.svg" });
+  if (flags & DISCORD_FLAGS.BUG_HUNTER_LEVEL_2) badges.push({ name: "Bug Hunter Level 2", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/bughunter2.svg" });
+  if (flags & DISCORD_FLAGS.ACTIVE_DEVELOPER) badges.push({ name: "Active Developer", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/activedeveloper.svg" });
+  if (flags & DISCORD_FLAGS.VERIFIED_DEVELOPER) badges.push({ name: "Early Verified Bot Developer", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/earlyverifiedbotdeveloper.svg" });
+  if (flags & DISCORD_FLAGS.CERTIFIED_MODERATOR) badges.push({ name: "Moderator Programs Alumni", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/discordcertifiedmoderator.svg" });
+  
+  return badges;
+};
+
 export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
-  // Removed Lanyard integration as requested to avoid server joining requirements.
-  // We will display the static rich profile data (Banner, Avatar, Name) stored in our DB.
+  const discordBadges = user.discordPublicFlags ? getDiscordBadges(user.discordPublicFlags) : [];
 
   return (
     <motion.div
@@ -56,7 +93,7 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
           {user.title || `@${user.username}`}
         </h1>
         
-        {/* Discord Profile Card (Static Rich Data) */}
+        {/* Discord Profile Card */}
         {user.showDiscordPresence && user.discordUsername && (
             <div className="mt-4 w-full max-w-[340px] mx-auto perspective-1000">
                 <div 
@@ -84,8 +121,29 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
                                         <FaDiscord className="text-white w-10 h-10" />
                                     </div>
                                 )}
+                                {/* Status Indicator - Only show if we had real status, but we don't. 
+                                    So we omit it to avoid "fake" data. 
+                                */}
                             </div>
                         </div>
+
+                        {/* Discord Badges */}
+                        {discordBadges.length > 0 && (
+                            <div className="absolute top-3 right-3 flex gap-1 bg-[#111214]/80 p-1 rounded-lg backdrop-blur-sm border border-white/5">
+                                {discordBadges.map((badge, i) => (
+                                    <TooltipProvider key={i}>
+                                        <Tooltip>
+                                            <TooltipTrigger>
+                                                <img src={badge.icon} alt={badge.name} className="w-5 h-5" />
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>{badge.name}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                ))}
+                            </div>
+                        )}
 
                         {/* Info */}
                         <div className="pt-[48px] text-left">
@@ -97,18 +155,16 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
                                      <span className="text-[#949BA4] text-lg">#{user.discordDiscriminator}</span>
                                 )}
                             </div>
-                            <p className="text-[#949BA4] text-sm font-medium mb-4">
+                            <p className="text-[#949BA4] text-sm font-medium">
                                 {user.discordUsername}
                             </p>
-                            
-                            {/* We removed the real-time status/activities section as it requires Lanyard/Server Joining */}
                         </div>
                     </div>
                 </div>
             </div>
         )}
 
-        {/* Badges */}
+        {/* Site Badges */}
         {badges && badges.length > 0 && (
           <div className="flex flex-wrap justify-center gap-2 mt-4">
             {badges.map((badge) => (

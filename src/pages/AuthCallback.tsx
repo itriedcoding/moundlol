@@ -43,6 +43,7 @@ export default function AuthCallback() {
                 discordAvatar: discordData.avatar || undefined,
                 discordBanner: discordData.banner || undefined,
                 discordAccentColor: discordData.accent_color?.toString(),
+                discordPublicFlags: discordData.public_flags,
             });
             toast.success("Discord connected successfully!");
             navigate("/dashboard");

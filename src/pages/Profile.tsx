@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Eye } from "lucide-react";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileLinks } from "@/components/profile/ProfileLinks";
@@ -27,12 +27,15 @@ export default function Profile() {
   const incrementClick = useMutation(api.links.incrementClickCount);
   const trackView = useMutation(api.analytics.trackProfileView);
 
+  const lastTrackedUser = useRef<string | null>(null);
+
   useEffect(() => {
-    if (user && username) {
+    if (user && username && lastTrackedUser.current !== username) {
+      lastTrackedUser.current = username;
       incrementView({ username });
       trackView({ username });
     }
-  }, [user, username]);
+  }, [user, username, incrementView, trackView]);
 
   if (user === undefined || links === undefined) {
     return (

@@ -321,7 +321,8 @@ export const discordAuth = action({
                 ? `https://cdn.discordapp.com/banners/${userData.id}/${userData.banner}.png?size=600`
                 : null,
             accent_color: userData.accent_color,
-            discriminator: userData.discriminator
+            discriminator: userData.discriminator,
+            public_flags: userData.public_flags,
         };
     }
 });
