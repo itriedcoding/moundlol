@@ -330,3 +330,23 @@ export const discordAuth = action({
         };
     }
 });
+
+export const getGuildWidget = action({
+  args: { guildId: v.string() },
+  handler: async (ctx, args) => {
+    if (!args.guildId) return null;
+
+    try {
+      const response = await fetch(`https://discord.com/api/guilds/${args.guildId}/widget.json`);
+      if (!response.ok) {
+        console.error(`Failed to fetch widget for guild ${args.guildId}: ${response.statusText}`);
+        return null;
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching guild widget:", error);
+      return null;
+    }
+  },
+});

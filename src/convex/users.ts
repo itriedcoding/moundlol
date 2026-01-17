@@ -116,6 +116,7 @@ export const updateProfile = mutation({
     newsletterActive: v.optional(v.boolean()),
     newsletterHeading: v.optional(v.string()),
     newsletterDescription: v.optional(v.string()),
+    discordGuildId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db
@@ -145,6 +146,7 @@ export const updateProfile = mutation({
       newsletterActive: args.newsletterActive,
       newsletterHeading: args.newsletterHeading,
       newsletterDescription: args.newsletterDescription,
+      discordGuildId: args.discordGuildId,
     });
   },
 });

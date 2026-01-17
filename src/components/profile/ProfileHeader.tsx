@@ -2,6 +2,9 @@ import { motion } from "framer-motion";
 import { BadgeCheck } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useEffect, useState } from "react";
+import { useAction } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface ProfileHeaderProps {
   user: any;
@@ -56,10 +59,46 @@ const getDiscordBadges = (flags: number, premiumType?: number) => {
   return badges;
 };
 
+const STATUS_COLORS = {
+  online: "#23a559",
+  idle: "#f0b232",
+  dnd: "#f23f43",
+  offline: "#80848e",
+};
+
 export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
   const discordBadges = user.discordPublicFlags || user.discordPremiumType 
     ? getDiscordBadges(user.discordPublicFlags || 0, user.discordPremiumType) 
     : [];
+
+  const [status, setStatus] = useState<"online" | "idle" | "dnd" | "offline">("offline");
+  const [activity, setActivity] = useState<any>(null);
+  const getGuildWidget = useAction(api.discord.getGuildWidget);
+
+  useEffect(() => {
+    if (user.discordGuildId && user.discordId) {
+      const fetchStatus = async () => {
+        try {
+          const data = await getGuildWidget({ guildId: user.discordGuildId });
+          if (data && data.members) {
+            const member = data.members.find((m: any) => m.id === user.discordId);
+            if (member) {
+              setStatus(member.status);
+              if (member.game) {
+                setActivity(member.game);
+              }
+            }
+          }
+        } catch (e) {
+          console.error("Failed to fetch Discord status", e);
+        }
+      };
+      fetchStatus();
+      // Poll every 60 seconds
+      const interval = setInterval(fetchStatus, 60000);
+      return () => clearInterval(interval);
+    }
+  }, [user.discordGuildId, user.discordId, getGuildWidget]);
 
   return (
     <motion.div
@@ -135,6 +174,12 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
                                             <FaDiscord className="text-white w-10 h-10" />
                                         </div>
                                     )}
+                                    {/* Status Indicator */}
+                                    <div 
+                                        className="absolute bottom-0 right-0 w-6 h-6 rounded-full border-[4px] border-[#111214] z-20"
+                                        style={{ backgroundColor: STATUS_COLORS[status] }}
+                                        title={status.toUpperCase()}
+                                    />
                                 </div>
                                 {/* Avatar Decoration */}
                                 {user.discordAvatarDecoration && (
@@ -178,6 +223,24 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
                             <p className="text-[#949BA4] text-sm font-medium">
                                 {user.discordUsername}
                             </p>
+
+                            {/* Activity / Status Text */}
+                            {activity ? (
+                                <div className="mt-3 pt-3 border-t border-[#2e3035]">
+                                    <p className="text-xs font-bold text-[#b5bac1] uppercase mb-1">
+                                        {activity.name === "Spotify" ? "Listening to Spotify" : "Playing a Game"}
+                                    </p>
+                                    <div className="flex items-center gap-2">
+                                        {/* We don't have rich assets from widget, just name usually */}
+                                        <p className="text-sm text-white">{activity.name}</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="mt-3 pt-3 border-t border-[#2e3035]">
+                                     <p className="text-xs font-bold text-[#b5bac1] uppercase mb-1">Status</p>
+                                     <p className="text-sm text-white capitalize">{status}</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

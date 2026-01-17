@@ -42,6 +42,7 @@ export default defineSchema({
     discordPublicFlags: v.optional(v.number()),
     discordPremiumType: v.optional(v.number()), // 0: None, 1: Nitro Classic, 2: Nitro, 3: Nitro Basic
     discordAvatarDecoration: v.optional(v.string()), // URL to decoration
+    discordGuildId: v.optional(v.string()), // For real-time status via Widget
     showDiscordPresence: v.optional(v.boolean()),
     email: v.optional(v.string()),
     // New Features

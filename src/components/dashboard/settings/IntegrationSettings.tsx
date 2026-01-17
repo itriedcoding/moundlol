@@ -4,6 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Music } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
+import { HelpCircle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface IntegrationSettingsProps {
   profileData: any;
@@ -56,6 +63,44 @@ export function IntegrationSettings({
                         Connect Discord
                     </Button>
                 </div>
+            )}
+
+            {user.discordId && (
+              <div className="space-y-4 pt-4 border-t border-white/5">
+                 <div>
+                    <div className="flex items-center gap-2 mb-2">
+                        <Label htmlFor="guildId" className="text-white font-medium">Discord Server ID (For Live Status)</Label>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <HelpCircle className="w-4 h-4 text-muted-foreground" />
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs">
+                                    <p>To show your Online/Idle/DND status:</p>
+                                    <ol className="list-decimal ml-4 mt-2 space-y-1 text-xs">
+                                        <li>Go to your Discord Server Settings</li>
+                                        <li>Enable "Widget"</li>
+                                        <li>Copy "Server ID"</li>
+                                        <li>Paste it here</li>
+                                    </ol>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
+                    <Input
+                        id="guildId"
+                        value={profileData.discordGuildId || ""}
+                        onChange={(e) =>
+                            setProfileData({ ...profileData, discordGuildId: e.target.value })
+                        }
+                        placeholder="e.g. 123456789012345678"
+                        className="bg-black/20 border-white/10 focus:border-[#5865F2]/50"
+                    />
+                    <p className="text-xs text-muted-foreground mt-2">
+                        Required for real-time status. You must be a member of this server and visible in the widget list.
+                    </p>
+                 </div>
+              </div>
             )}
         </div>
       </div>
