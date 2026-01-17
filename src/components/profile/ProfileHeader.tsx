@@ -81,8 +81,7 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
                                         <FaDiscord className="text-white w-8 h-8" />
                                     </div>
                                 )}
-                                {/* Status Indicator (Mocked as online since we can't get real-time without bot in guild) */}
-                                <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-[3px] border-[#111214] rounded-full" title="Online"></div>
+                                {/* Status Indicator removed to avoid fake data */}
                             </div>
                         </div>
 
