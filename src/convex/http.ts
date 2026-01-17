@@ -1,6 +1,6 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 
 const http = httpRouter();
 
@@ -26,6 +26,36 @@ http.route({
       return new Response(JSON.stringify({ success: true }), { status: 200 });
     } catch (error: any) {
       return new Response(JSON.stringify({ error: error.message }), { status: 400 });
+    }
+  }),
+});
+
+http.route({
+  path: "/api/discord/interactions",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const signature = req.headers.get("X-Signature-Ed25519");
+    const timestamp = req.headers.get("X-Signature-Timestamp");
+    const body = await req.text();
+
+    if (!signature || !timestamp) {
+      return new Response("Missing signature headers", { status: 401 });
+    }
+
+    try {
+        const result = await ctx.runAction(api.discord.interactionHandler, {
+            signature,
+            timestamp,
+            body,
+        });
+        
+        return new Response(result.body, {
+            status: result.status,
+            headers: new Headers(result.headers),
+        });
+    } catch (e: any) {
+        console.error(e);
+        return new Response("Internal Server Error", { status: 500 });
     }
   }),
 });

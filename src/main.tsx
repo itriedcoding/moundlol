@@ -15,6 +15,7 @@ const Profile = lazy(() => import("./pages/Profile.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Terms = lazy(() => import("./pages/Terms.tsx"));
 const Privacy = lazy(() => import("./pages/Privacy.tsx"));
+const Status = lazy(() => import("./pages/Status.tsx"));
 
 // Simple loading fallback for route transitions
 function RouteLoading() {
@@ -71,6 +72,7 @@ createRoot(document.getElementById("root")!).render(
               <Route path="/" element={<Landing />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
+              <Route path="/status" element={<Status />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/:username" element={<Profile />} />
               <Route path="*" element={<NotFound />} />

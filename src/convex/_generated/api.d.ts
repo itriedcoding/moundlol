@@ -10,9 +10,11 @@
 
 import type * as analytics from "../analytics.js";
 import type * as badges from "../badges.js";
+import type * as discord from "../discord.js";
 import type * as http from "../http.js";
 import type * as links from "../links.js";
 import type * as seedData from "../seedData.js";
+import type * as status from "../status.js";
 import type * as users from "../users.js";
 
 import type {
@@ -24,9 +26,11 @@ import type {
 declare const fullApi: ApiFromModules<{
   analytics: typeof analytics;
   badges: typeof badges;
+  discord: typeof discord;
   http: typeof http;
   links: typeof links;
   seedData: typeof seedData;
+  status: typeof status;
   users: typeof users;
 }>;
 

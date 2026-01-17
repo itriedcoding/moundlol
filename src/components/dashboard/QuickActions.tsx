@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Copy, ExternalLink } from "lucide-react";
+import { Copy, ExternalLink, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -41,6 +41,14 @@ export function QuickActions({ user }: QuickActionsProps) {
         >
           <ExternalLink className="w-4 h-4 mr-2" />
           View Public Profile
+        </Button>
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          onClick={() => navigate("/status")}
+        >
+          <Activity className="w-4 h-4 mr-2" />
+          System Status
         </Button>
       </div>
     </motion.div>
