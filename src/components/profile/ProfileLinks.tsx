@@ -4,11 +4,12 @@ import {
   FaTiktok, FaInstagram, FaTwitter, FaYoutube, FaTwitch,
   FaWhatsapp, FaTelegram, FaDiscord, FaSpotify, FaLinkedin,
   FaFacebook, FaSnapchat, FaReddit, FaGithub, FaPatreon,
-  FaPinterest, FaTumblr, FaVimeo, FaMedium, FaPaypal
-} from "react-icons/fa";
+  FaPinterest, FaTumblr, FaVimeo, FaMedium, FaPaypal,
+  FaThreads, FaBluesky
+} from "react-icons/fa6";
 import { 
   SiOnlyfans, SiSoundcloud, SiCashapp, SiVenmo, SiKofi,
-  SiBuymeacoffee, SiSubstack, SiX
+  SiBuymeacoffee, SiSubstack, SiX, SiKick
 } from "react-icons/si";
 import { Globe, Mail, Link as LinkIcon } from "lucide-react";
 
@@ -16,8 +17,11 @@ const PLATFORM_COLORS: Record<string, string> = {
   tiktok: "from-[#000000] to-[#00f2ea]",
   instagram: "from-[#833ab4] via-[#fd1d1d] to-[#fcb045]",
   twitter: "from-[#1DA1F2] to-[#1a8cd8]",
+  threads: "from-[#000000] to-[#333333]",
+  bluesky: "from-[#0560FF] to-[#0040cc]",
   youtube: "from-[#FF0000] to-[#cc0000]",
   twitch: "from-[#9146FF] to-[#772ce8]",
+  kick: "from-[#53FC18] to-[#32b300]",
   onlyfans: "from-[#00AFF0] to-[#0088cc]",
   fansly: "from-[#2BDEAC] to-[#1fb589]",
   whatsapp: "from-[#25D366] to-[#1da851]",
@@ -50,8 +54,11 @@ const PLATFORM_ICON_COLORS: Record<string, string> = {
   tiktok: "#000000",
   instagram: "#E1306C",
   twitter: "#1DA1F2",
+  threads: "#000000",
+  bluesky: "#0560FF",
   youtube: "#FF0000",
   twitch: "#9146FF",
+  kick: "#53FC18",
   onlyfans: "#00AFF0",
   whatsapp: "#25D366",
   telegram: "#0088cc",
@@ -83,8 +90,11 @@ const PLATFORM_ICONS: Record<string, any> = {
   tiktok: FaTiktok,
   instagram: FaInstagram,
   twitter: SiX,
+  threads: FaThreads,
+  bluesky: FaBluesky,
   youtube: FaYoutube,
   twitch: FaTwitch,
+  kick: SiKick,
   onlyfans: SiOnlyfans,
   whatsapp: FaWhatsapp,
   telegram: FaTelegram,

@@ -13,11 +13,12 @@ import {
   FaTiktok, FaInstagram, FaTwitter, FaYoutube, FaTwitch,
   FaWhatsapp, FaTelegram, FaDiscord, FaSpotify, FaLinkedin,
   FaFacebook, FaSnapchat, FaReddit, FaGithub, FaPatreon,
-  FaPinterest, FaTumblr, FaVimeo, FaMedium, FaPaypal
-} from "react-icons/fa";
+  FaPinterest, FaTumblr, FaVimeo, FaMedium, FaPaypal,
+  FaThreads, FaBluesky
+} from "react-icons/fa6";
 import { 
   SiOnlyfans, SiSoundcloud, SiCashapp, SiVenmo, SiKofi,
-  SiBuymeacoffee, SiSubstack, SiX
+  SiBuymeacoffee, SiSubstack, SiX, SiKick
 } from "react-icons/si";
 import { Globe, Mail, Link as LinkIcon, Plus, Eye, EyeOff, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -27,37 +28,40 @@ import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 
 const SOCIAL_PLATFORMS = [
-  { value: "tiktok", label: "TikTok", icon: <FaTiktok /> },
-  { value: "instagram", label: "Instagram", icon: <FaInstagram /> },
-  { value: "twitter", label: "X (Twitter)", icon: <SiX /> },
-  { value: "youtube", label: "YouTube", icon: <FaYoutube /> },
-  { value: "twitch", label: "Twitch", icon: <FaTwitch /> },
-  { value: "onlyfans", label: "OnlyFans", icon: <SiOnlyfans /> },
-  { value: "fansly", label: "Fansly", icon: "💎" },
-  { value: "whatsapp", label: "WhatsApp", icon: <FaWhatsapp /> },
-  { value: "telegram", label: "Telegram", icon: <FaTelegram /> },
-  { value: "discord", label: "Discord", icon: <FaDiscord /> },
-  { value: "spotify", label: "Spotify", icon: <FaSpotify /> },
-  { value: "soundcloud", label: "SoundCloud", icon: <SiSoundcloud /> },
-  { value: "patreon", label: "Patreon", icon: <FaPatreon /> },
-  { value: "kofi", label: "Ko-fi", icon: <SiKofi /> },
-  { value: "buymeacoffee", label: "Buy Me a Coffee", icon: <SiBuymeacoffee /> },
-  { value: "linkedin", label: "LinkedIn", icon: <FaLinkedin /> },
-  { value: "facebook", label: "Facebook", icon: <FaFacebook /> },
-  { value: "snapchat", label: "Snapchat", icon: <FaSnapchat /> },
-  { value: "reddit", label: "Reddit", icon: <FaReddit /> },
-  { value: "github", label: "GitHub", icon: <FaGithub /> },
-  { value: "pinterest", label: "Pinterest", icon: <FaPinterest /> },
-  { value: "medium", label: "Medium", icon: <FaMedium /> },
-  { value: "substack", label: "Substack", icon: <SiSubstack /> },
-  { value: "vimeo", label: "Vimeo", icon: <FaVimeo /> },
-  { value: "tumblr", label: "Tumblr", icon: <FaTumblr /> },
-  { value: "paypal", label: "PayPal", icon: <FaPaypal /> },
-  { value: "cashapp", label: "Cash App", icon: <SiCashapp /> },
-  { value: "venmo", label: "Venmo", icon: <SiVenmo /> },
-  { value: "website", label: "Website", icon: <Globe className="w-4 h-4" /> },
-  { value: "email", label: "Email", icon: <Mail className="w-4 h-4" /> },
-  { value: "custom", label: "Custom Link", icon: <LinkIcon className="w-4 h-4" /> },
+  { value: "tiktok", label: "TikTok", icon: <FaTiktok />, color: "#000000" },
+  { value: "instagram", label: "Instagram", icon: <FaInstagram />, color: "#E1306C" },
+  { value: "twitter", label: "X (Twitter)", icon: <SiX />, color: "#1DA1F2" },
+  { value: "threads", label: "Threads", icon: <FaThreads />, color: "#000000" },
+  { value: "bluesky", label: "Bluesky", icon: <FaBluesky />, color: "#0560FF" },
+  { value: "youtube", label: "YouTube", icon: <FaYoutube />, color: "#FF0000" },
+  { value: "twitch", label: "Twitch", icon: <FaTwitch />, color: "#9146FF" },
+  { value: "kick", label: "Kick", icon: <SiKick />, color: "#53FC18" },
+  { value: "onlyfans", label: "OnlyFans", icon: <SiOnlyfans />, color: "#00AFF0" },
+  { value: "fansly", label: "Fansly", icon: "💎", color: "#2BDEAC" },
+  { value: "whatsapp", label: "WhatsApp", icon: <FaWhatsapp />, color: "#25D366" },
+  { value: "telegram", label: "Telegram", icon: <FaTelegram />, color: "#0088cc" },
+  { value: "discord", label: "Discord", icon: <FaDiscord />, color: "#5865F2" },
+  { value: "spotify", label: "Spotify", icon: <FaSpotify />, color: "#1DB954" },
+  { value: "soundcloud", label: "SoundCloud", icon: <SiSoundcloud />, color: "#ff8800" },
+  { value: "patreon", label: "Patreon", icon: <FaPatreon />, color: "#FF424D" },
+  { value: "kofi", label: "Ko-fi", icon: <SiKofi />, color: "#FF5E5B" },
+  { value: "buymeacoffee", label: "Buy Me a Coffee", icon: <SiBuymeacoffee />, color: "#FFDD00" },
+  { value: "linkedin", label: "LinkedIn", icon: <FaLinkedin />, color: "#0077b5" },
+  { value: "facebook", label: "Facebook", icon: <FaFacebook />, color: "#1877F2" },
+  { value: "snapchat", label: "Snapchat", icon: <FaSnapchat />, color: "#FFFC00" },
+  { value: "reddit", label: "Reddit", icon: <FaReddit />, color: "#FF4500" },
+  { value: "github", label: "GitHub", icon: <FaGithub />, color: "#333333" },
+  { value: "pinterest", label: "Pinterest", icon: <FaPinterest />, color: "#E60023" },
+  { value: "medium", label: "Medium", icon: <FaMedium />, color: "#000000" },
+  { value: "substack", label: "Substack", icon: <SiSubstack />, color: "#FF6719" },
+  { value: "vimeo", label: "Vimeo", icon: <FaVimeo />, color: "#1ab7ea" },
+  { value: "tumblr", label: "Tumblr", icon: <FaTumblr />, color: "#35465c" },
+  { value: "paypal", label: "PayPal", icon: <FaPaypal />, color: "#00457C" },
+  { value: "cashapp", label: "Cash App", icon: <SiCashapp />, color: "#00C244" },
+  { value: "venmo", label: "Venmo", icon: <SiVenmo />, color: "#008CFF" },
+  { value: "website", label: "Website", icon: <Globe className="w-4 h-4" />, color: "#ff1493" },
+  { value: "email", label: "Email", icon: <Mail className="w-4 h-4" />, color: "#ff1493" },
+  { value: "custom", label: "Custom Link", icon: <LinkIcon className="w-4 h-4" />, color: "#ff1493" },
 ];
 
 interface LinksManagementProps {
@@ -220,7 +224,13 @@ export function LinksManagement({ sessionToken }: LinksManagementProps) {
               animate={{ scale: 1, opacity: 1 }}
               className="flex items-center gap-4 p-4 bg-black/20 rounded-2xl border border-white/5 hover:border-primary/30 transition-all group hover:bg-black/30"
             >
-              <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-2xl text-white group-hover:scale-110 transition-transform">
+              <div 
+                className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-transform group-hover:scale-110"
+                style={{ 
+                  backgroundColor: `${platformDef?.color}20`, // 20% opacity
+                  color: platformDef?.color 
+                }}
+              >
                 {platformDef?.icon}
               </div>
               <div className="flex-1 min-w-0">
