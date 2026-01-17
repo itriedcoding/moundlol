@@ -72,13 +72,13 @@ export default function AuthCallback() {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-white p-4">
-        <div className="max-w-lg w-full bg-red-950/30 border border-red-500/30 rounded-2xl p-8 text-center backdrop-blur-xl">
+        <div className="max-w-2xl w-full bg-red-950/30 border border-red-500/30 rounded-2xl p-8 text-center backdrop-blur-xl">
           <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <AlertTriangle className="w-8 h-8 text-red-500" />
           </div>
           <h3 className="text-2xl font-bold text-white mb-4">Connection Failed</h3>
-          <div className="bg-black/40 rounded-lg p-4 mb-8 text-left overflow-auto max-h-60 border border-white/5">
-            <p className="text-sm font-mono text-red-200 whitespace-pre-wrap break-words leading-relaxed">
+          <div className="bg-black/40 rounded-lg p-6 mb-8 text-left overflow-auto max-h-96 border border-white/5 font-mono text-sm">
+            <p className="text-red-200 whitespace-pre-wrap break-words leading-relaxed">
               {error}
             </p>
           </div>

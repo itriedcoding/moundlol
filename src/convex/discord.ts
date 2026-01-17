@@ -254,12 +254,15 @@ export const discordAuth = action({
         console.log(`[Discord Auth] Exchanging code with Client ID: ${clientId.substring(0, 4)}... (Length: ${clientId.length})`);
 
         // Exchange code for token
+        // Use Basic Auth for better compatibility and to avoid body parsing issues
+        const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
         const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
             method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            headers: { 
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": `Basic ${credentials}`
+            },
             body: new URLSearchParams({
-                client_id: clientId,
-                client_secret: clientSecret,
                 grant_type: "authorization_code",
                 code: args.code,
                 redirect_uri: args.redirectUri,
@@ -276,14 +279,18 @@ export const discordAuth = action({
                 if (errorData.error === 'invalid_client') {
                     errorMessage = `Configuration Error: Discord rejected the Client Credentials.\n\n` +
                         `DEBUG INFO:\n` +
-                        `- Used Client ID Length: ${clientId.length}\n` +
-                        `- Used Client Secret Length: ${clientSecret.length}\n\n` +
+                        `- Used Client ID: ${clientId.substring(0, 4)}... (Length: ${clientId.length})\n` +
+                        `- Used Client Secret: ${clientSecret.substring(0, 4)}... (Length: ${clientSecret.length})\n\n` +
                         `CHECKLIST:\n` +
                         `1. Ensure 'DISCORD_CLIENT_SECRET' in Convex Dashboard matches 'Client Secret' in Discord Dev Portal > OAuth2.\n` +
                         `   (Do NOT use the 'Public Key' or 'Bot Token')\n` +
                         `2. Ensure 'DISCORD_CLIENT_ID' matches 'Application ID'.\n` +
                         `3. Did you set these in the Convex Dashboard? (.env files are NOT automatically pushed to the cloud backend)\n` +
                         `4. Try resetting the Client Secret in Discord and updating it in Convex.`;
+                    
+                    if (clientId === clientSecret) {
+                        errorMessage += `\n\n⚠️ CRITICAL: Client ID and Client Secret are IDENTICAL. You likely copy-pasted the ID into the Secret field.`;
+                    }
                 } else if (errorData.error === 'invalid_grant') {
                     errorMessage = "Authorization Error: The code is invalid or expired. Please try logging in again.";
                 } else if (errorData.error === 'redirect_uri_mismatch') {
