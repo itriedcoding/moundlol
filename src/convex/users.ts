@@ -80,6 +80,13 @@ export const getUserByUsername = query({
   },
 });
 
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
+  },
+});
+
 export const updateProfile = mutation({
   args: {
     sessionToken: v.string(),
@@ -92,6 +99,17 @@ export const updateProfile = mutation({
     audioUrl: v.optional(v.string()),
     audioAutoPlay: v.optional(v.boolean()),
     theme: v.optional(v.string()),
+    font: v.optional(v.string()),
+    // New fields
+    seoTitle: v.optional(v.string()),
+    seoDescription: v.optional(v.string()),
+    customCss: v.optional(v.string()),
+    showSocialProof: v.optional(v.boolean()),
+    sensitiveContent: v.optional(v.boolean()),
+    animationEffect: v.optional(v.string()),
+    newsletterActive: v.optional(v.boolean()),
+    newsletterHeading: v.optional(v.string()),
+    newsletterDescription: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db
@@ -111,6 +129,16 @@ export const updateProfile = mutation({
       audioUrl: args.audioUrl,
       audioAutoPlay: args.audioAutoPlay,
       theme: args.theme,
+      font: args.font,
+      seoTitle: args.seoTitle,
+      seoDescription: args.seoDescription,
+      customCss: args.customCss,
+      showSocialProof: args.showSocialProof,
+      sensitiveContent: args.sensitiveContent,
+      animationEffect: args.animationEffect,
+      newsletterActive: args.newsletterActive,
+      newsletterHeading: args.newsletterHeading,
+      newsletterDescription: args.newsletterDescription,
     });
   },
 });

@@ -1,2 +1,7 @@
-const result = await ctx.runAction(api.discord.interactionHandler, ...);
-return new Response(result.body, { status: result.status, headers: ... });
+export const addEmailSubscriber = mutation({
+  args: {
+    username: v.string(),
+    email: v.string(),
+    source: v.optional(v.string()),
+  },
+  // ...

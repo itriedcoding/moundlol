@@ -1,9 +1,9 @@
 import { useParams, useNavigate } from "react-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
-import { Check, Sparkles, Play, Pause, Volume2, VolumeX, ArrowLeft } from "lucide-react";
+import { Check, Sparkles, Play, Pause, Volume2, VolumeX, ArrowLeft, Eye, ShieldAlert, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { setSessionToken } from "@/lib/session";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileLinks } from "@/components/profile/ProfileLinks";
+import { Helmet } from "react-helmet";
 
 export default function Profile() {
   const { username } = useParams<{ username: string }>();
@@ -18,6 +19,9 @@ export default function Profile() {
   const [isClaiming, setIsClaiming] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [showSensitiveWarning, setShowSensitiveWarning] = useState(false);
+  const [email, setEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const user = useQuery(api.users.getUserByUsername, {
@@ -30,6 +34,7 @@ export default function Profile() {
   const incrementView = useMutation(api.users.incrementViewCount);
   const incrementClick = useMutation(api.links.incrementClickCount);
   const trackView = useMutation(api.analytics.trackProfileView);
+  const subscribe = useMutation(api.analytics.addEmailSubscriber);
 
   const handleClaimUsername = async () => {
     if (!username) return;
@@ -55,6 +60,9 @@ export default function Profile() {
     if (user && username) {
       incrementView({ username });
       trackView({ username });
+      if (user.sensitiveContent) {
+        setShowSensitiveWarning(true);
+      }
     }
   }, [user, username]);
 
@@ -85,6 +93,22 @@ export default function Profile() {
     if (audioRef.current) {
       audioRef.current.muted = !isMuted;
       setIsMuted(!isMuted);
+    }
+  };
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !username) return;
+    
+    setIsSubscribing(true);
+    try {
+      await subscribe({ username, email, source: "profile_page" });
+      toast.success("Subscribed successfully!");
+      setEmail("");
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsSubscribing(false);
     }
   };
 
@@ -205,64 +229,229 @@ export default function Profile() {
     return {}; // Default handled by CSS
   };
 
-  return (
-    <div 
-      className="min-h-screen bg-background relative overflow-x-hidden transition-colors duration-500"
-      style={getBackgroundStyle()}
-    >
-      {/* Overlay for readability if image background */}
-      {user.backgroundType === "image" && (
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
-      )}
-
-      {/* Audio Player */}
-      {user.audioUrl && (
-        <div className="fixed bottom-6 right-6 z-50 flex gap-2">
-          <audio ref={audioRef} src={user.audioUrl} loop />
-          <Button
-            size="icon"
-            variant="secondary"
-            className="rounded-full w-12 h-12 shadow-lg bg-background/80 backdrop-blur-md border border-white/10"
-            onClick={togglePlay}
-          >
-            {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-1" />}
-          </Button>
-          <Button
-            size="icon"
-            variant="secondary"
-            className="rounded-full w-12 h-12 shadow-lg bg-background/80 backdrop-blur-md border border-white/10"
-            onClick={toggleMute}
-          >
-            {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-          </Button>
+  // Animation effects
+  const renderAnimation = () => {
+    if (user.animationEffect === "snow") {
+      return (
+        <div className="fixed inset-0 pointer-events-none z-0">
+          {[...Array(50)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute bg-white rounded-full opacity-70"
+              initial={{ y: -10, x: Math.random() * window.innerWidth }}
+              animate={{ y: window.innerHeight + 10 }}
+              transition={{
+                duration: Math.random() * 5 + 5,
+                repeat: Infinity,
+                delay: Math.random() * 5,
+                ease: "linear"
+              }}
+              style={{
+                width: Math.random() * 4 + 2,
+                height: Math.random() * 4 + 2,
+                left: Math.random() * 100 + "%"
+              }}
+            />
+          ))}
         </div>
-      )}
+      );
+    }
+    if (user.animationEffect === "rain") {
+      return (
+        <div className="fixed inset-0 pointer-events-none z-0">
+          {[...Array(100)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute bg-blue-400/50 w-[1px] h-4"
+              initial={{ y: -20, x: Math.random() * window.innerWidth }}
+              animate={{ y: window.innerHeight + 20 }}
+              transition={{
+                duration: Math.random() * 1 + 0.5,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+                ease: "linear"
+              }}
+              style={{ left: Math.random() * 100 + "%" }}
+            />
+          ))}
+        </div>
+      );
+    }
+    if (user.animationEffect === "sparkles") {
+        return (
+            <div className="fixed inset-0 pointer-events-none z-0">
+                {[...Array(30)].map((_, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute"
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ 
+                            opacity: [0, 1, 0], 
+                            scale: [0, 1, 0],
+                            x: Math.random() * window.innerWidth,
+                            y: Math.random() * window.innerHeight
+                        }}
+                        transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            delay: Math.random() * 2,
+                        }}
+                    >
+                        <Sparkles className="w-4 h-4 text-yellow-200" />
+                    </motion.div>
+                ))}
+            </div>
+        );
+    }
+    return null;
+  };
 
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 py-12">
-        <div className="max-w-2xl mx-auto">
-          <ProfileHeader user={user} badges={badges || []} />
-          <ProfileLinks links={links || []} user={user} onLinkClick={handleLinkClick} />
+  return (
+    <>
+      {/* SEO */}
+      <Helmet>
+        <title>{user.seoTitle || `${user.title || user.username} | mound.lol`}</title>
+        <meta name="description" content={user.seoDescription || user.bio || `Check out ${user.username}'s links on mound.lol`} />
+        {user.customCss && <style>{user.customCss}</style>}
+      </Helmet>
 
-          {/* Footer */}
+      {/* Sensitive Content Warning */}
+      <AnimatePresence>
+        {showSensitiveWarning && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="text-center mt-12 pt-8"
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4"
           >
-            <button
-              onClick={() => navigate("/")}
-              className="text-white/60 hover:text-white transition-colors text-sm inline-flex items-center gap-2 bg-black/20 px-4 py-2 rounded-full backdrop-blur-sm border border-white/10 hover:bg-black/40"
-            >
-              Create your own{" "}
-              <span className="text-primary font-bold">
-                mound.lol
-              </span>
-            </button>
+            <div className="max-w-md w-full bg-card border border-red-500/30 rounded-3xl p-8 text-center">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-500/10 flex items-center justify-center">
+                <ShieldAlert className="w-10 h-10 text-red-500" />
+              </div>
+              <h2 className="text-2xl font-bold mb-2">Sensitive Content</h2>
+              <p className="text-muted-foreground mb-8">
+                This profile may contain content that is not suitable for all audiences.
+                Are you over 18 and wish to proceed?
+              </p>
+              <div className="flex gap-4">
+                <Button 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => navigate("/")}
+                >
+                  Go Back
+                </Button>
+                <Button 
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                  onClick={() => setShowSensitiveWarning(false)}
+                >
+                  I'm 18+
+                </Button>
+              </div>
+            </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div 
+        className={`min-h-screen bg-background relative overflow-x-hidden transition-colors duration-500 font-${user.font || 'sans'}`}
+        style={getBackgroundStyle()}
+      >
+        {/* Overlay for readability if image background */}
+        {user.backgroundType === "image" && (
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+        )}
+
+        {renderAnimation()}
+
+        {/* Audio Player */}
+        {user.audioUrl && (
+          <div className="fixed bottom-6 right-6 z-50 flex gap-2">
+            <audio ref={audioRef} src={user.audioUrl} loop />
+            <Button
+              size="icon"
+              variant="secondary"
+              className="rounded-full w-12 h-12 shadow-lg bg-background/80 backdrop-blur-md border border-white/10"
+              onClick={togglePlay}
+            >
+              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-1" />}
+            </Button>
+            <Button
+              size="icon"
+              variant="secondary"
+              className="rounded-full w-12 h-12 shadow-lg bg-background/80 backdrop-blur-md border border-white/10"
+              onClick={toggleMute}
+            >
+              {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+            </Button>
+          </div>
+        )}
+
+        {/* Content */}
+        <div className="relative z-10 container mx-auto px-4 py-12">
+          <div className="max-w-2xl mx-auto">
+            <ProfileHeader user={user} badges={badges || []} />
+            
+            {/* Social Proof */}
+            {user.showSocialProof && (
+              <div className="flex justify-center gap-6 mb-8 text-sm text-white/60 font-medium">
+                <div className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full backdrop-blur-sm border border-white/5">
+                  <Eye className="w-4 h-4" />
+                  {user.viewCount} views
+                </div>
+              </div>
+            )}
+
+            <ProfileLinks links={links || []} user={user} onLinkClick={handleLinkClick} />
+
+            {/* Newsletter */}
+            {user.newsletterActive && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-8 p-6 bg-black/30 backdrop-blur-xl border border-white/10 rounded-3xl text-center"
+              >
+                <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Mail className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">{user.newsletterHeading}</h3>
+                <p className="text-white/60 mb-6">{user.newsletterDescription}</p>
+                <form onSubmit={handleSubscribe} className="flex gap-2 max-w-sm mx-auto">
+                  <Input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                    required
+                  />
+                  <Button type="submit" disabled={isSubscribing}>
+                    {isSubscribing ? "..." : "Join"}
+                  </Button>
+                </form>
+              </motion.div>
+            )}
+
+            {/* Footer */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="text-center mt-12 pt-8"
+            >
+              <button
+                onClick={() => navigate("/")}
+                className="text-white/60 hover:text-white transition-colors text-sm inline-flex items-center gap-2 bg-black/20 px-4 py-2 rounded-full backdrop-blur-sm border border-white/10 hover:bg-black/40"
+              >
+                Create your own{" "}
+                <span className="text-primary font-bold">
+                  mound.lol
+                </span>
+              </button>
+            </motion.div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

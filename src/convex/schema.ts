@@ -37,6 +37,12 @@ export default defineSchema({
     discordAvatar: v.optional(v.string()),
     showDiscordPresence: v.optional(v.boolean()),
     email: v.optional(v.string()),
+    // New Features
+    sensitiveContent: v.optional(v.boolean()),
+    animationEffect: v.optional(v.string()), // "none", "snow", "rain", "sparkles", "stars"
+    newsletterActive: v.optional(v.boolean()),
+    newsletterHeading: v.optional(v.string()),
+    newsletterDescription: v.optional(v.string()),
   })
     .index("by_username", ["username"])
     .index("by_session", ["sessionToken"])
