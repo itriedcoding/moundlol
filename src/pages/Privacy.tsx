@@ -7,13 +7,13 @@ export default function Privacy() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen bg-black relative overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-primary/5" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,20,147,0.1),transparent_50%)]" />
+      <div className="absolute top-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
       
       <motion.div
-        className="absolute top-20 left-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
+        className="absolute top-20 left-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl"
         animate={{
           scale: [1, 1.2, 1],
           opacity: [0.3, 0.5, 0.3],
@@ -30,7 +30,7 @@ export default function Privacy() {
           <Button
             variant="ghost"
             onClick={() => navigate("/")}
-            className="mb-8 hover:bg-primary/10 hover:text-primary transition-colors"
+            className="mb-8 hover:bg-primary/10 hover:text-primary transition-colors text-white"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
@@ -39,10 +39,10 @@ export default function Privacy() {
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="bg-card/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl"
+            className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl"
           >
             <div className="flex items-center gap-4 mb-8">
-              <div className="p-3 rounded-2xl bg-primary/10 border border-primary/20">
+              <div className="p-3 rounded-2xl bg-primary/10 border border-primary/20 shadow-[0_0_15px_rgba(255,20,147,0.3)]">
                 <Lock className="w-8 h-8 text-primary" />
               </div>
               <div>

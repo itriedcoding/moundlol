@@ -36,10 +36,13 @@ const features = [
 
 export function LandingFeatures() {
   return (
-    <section className="py-24 relative overflow-hidden">
-      <div className="container px-4 mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+    <section className="py-32 relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="container px-4 mx-auto relative z-10">
+        <div className="text-center mb-20">
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
             Everything you need
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -55,13 +58,13 @@ export function LandingFeatures() {
               whileInView={{ y: 0, opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="group p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors backdrop-blur-sm"
+              className="group p-8 rounded-3xl bg-black/40 border border-white/10 hover:bg-white/5 transition-all duration-500 backdrop-blur-xl hover:border-primary/30 hover:shadow-[0_0_30px_rgba(255,20,147,0.1)]"
             >
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <feature.icon className="w-6 h-6 text-primary" />
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 border border-primary/20 group-hover:border-primary/50 group-hover:shadow-[0_0_20px_rgba(255,20,147,0.3)]">
+                <feature.icon className="w-7 h-7 text-primary" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">
+              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">{feature.title}</h3>
+              <p className="text-muted-foreground leading-relaxed group-hover:text-white/80 transition-colors">
                 {feature.description}
               </p>
             </motion.div>

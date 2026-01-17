@@ -1,7 +1,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { motion } from "framer-motion";
-import { Activity, Users, Link as LinkIcon, CheckCircle2, ArrowLeft, Server } from "lucide-react";
+import { Activity, Users, Link as LinkIcon, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
 
@@ -9,120 +9,96 @@ export default function Status() {
   const navigate = useNavigate();
   const status = useQuery(api.status.get);
 
-  const stats = [
-    {
-      label: "Total Users",
-      value: status?.stats?.users?.toLocaleString() || "-",
-      icon: Users,
-      color: "text-blue-400",
-      bg: "bg-blue-400/10",
-    },
-    {
-      label: "Total Links",
-      value: status?.stats?.links?.toLocaleString() || "-",
-      icon: LinkIcon,
-      color: "text-pink-400",
-      bg: "bg-pink-400/10",
-    },
-    {
-      label: "System Status",
-      value: "Operational",
-      icon: Activity,
-      color: "text-green-400",
-      bg: "bg-green-400/10",
-    },
-  ];
-
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen bg-black text-foreground relative overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-primary/5" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,20,147,0.1),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,20,147,0.15),transparent_60%)]" />
+      <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-primary/5 to-transparent" />
       
-      <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl"
-        animate={{
-          scale: [1, 1.1, 1],
-          opacity: [0.3, 0.5, 0.3],
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-
-      <div className="relative z-10 container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/")}
-            className="mb-8 hover:bg-primary/10 hover:text-primary transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+      <div className="container mx-auto px-4 py-12 relative z-10">
+        <div className="flex justify-between items-center mb-12">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 shadow-[0_0_15px_rgba(255,20,147,0.3)]">
+              <Activity className="w-6 h-6 text-primary" />
+            </div>
+            <h1 className="text-3xl font-bold text-white">System Status</h1>
+          </div>
+          <Button variant="ghost" onClick={() => navigate("/")} className="hover:bg-white/10">
             Back to Home
           </Button>
+        </div>
 
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="text-center mb-12"
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          {/* Stats Cards */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-6 rounded-3xl bg-black/40 border border-white/10 backdrop-blur-xl hover:border-primary/30 transition-colors"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 mb-6">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-sm font-medium text-green-500">All Systems Operational</span>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                <Users className="w-5 h-5" />
+              </div>
+              <span className="text-muted-foreground">Total Users</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">System Status</h1>
-            <p className="text-muted-foreground text-lg">Real-time performance metrics and operational status</p>
+            <div className="text-4xl font-bold text-white">{status?.stats?.users || 0}</div>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-card/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-primary/30 transition-colors group"
-              >
-                <div className={`w-12 h-12 rounded-xl ${stat.bg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                </div>
-                <p className="text-muted-foreground text-sm font-medium mb-1">{stat.label}</p>
-                <p className="text-3xl font-bold text-white">{stat.value}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="bg-card/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8"
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="p-6 rounded-3xl bg-black/40 border border-white/10 backdrop-blur-xl hover:border-primary/30 transition-colors"
           >
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <Server className="w-5 h-5 text-primary" />
-              Service Health
-            </h2>
-            
-            <div className="space-y-4">
-              {[
-                { name: "API Gateway", status: "Operational" },
-                { name: "Database", status: "Operational" },
-                { name: "Discord Bot", status: "Operational" },
-                { name: "Image Optimization", status: "Operational" },
-                { name: "Authentication", status: "Operational" },
-              ].map((service, i) => (
-                <div key={service.name} className="flex items-center justify-between p-4 rounded-xl bg-black/20 border border-white/5">
-                  <span className="font-medium">{service.name}</span>
-                  <div className="flex items-center gap-2 text-green-500">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span className="text-sm font-medium">{service.status}</span>
-                  </div>
-                </div>
-              ))}
+            <div className="flex items-center gap-4 mb-4">
+              <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                <LinkIcon className="w-5 h-5" />
+              </div>
+              <span className="text-muted-foreground">Total Links</span>
             </div>
+            <div className="text-4xl font-bold text-white">{status?.stats?.links || 0}</div>
           </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="p-6 rounded-3xl bg-black/40 border border-white/10 backdrop-blur-xl hover:border-primary/30 transition-colors"
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                <Clock className="w-5 h-5" />
+              </div>
+              <span className="text-muted-foreground">Uptime</span>
+            </div>
+            <div className="text-4xl font-bold text-white">99.9%</div>
+          </motion.div>
+        </div>
+
+        {/* Services Status */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold text-white mb-6">Services</h2>
+          
+          {[
+            { name: "API", status: "operational" },
+            { name: "Database", status: "operational" },
+            { name: "Discord Bot", status: "operational" },
+            { name: "Link Redirects", status: "operational" },
+          ].map((service, index) => (
+            <motion.div
+              key={service.name}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 + index * 0.1 }}
+              className="flex items-center justify-between p-4 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md hover:bg-white/5 transition-colors"
+            >
+              <span className="font-medium text-white">{service.name}</span>
+              <div className="flex items-center gap-2 text-primary">
+                <CheckCircle2 className="w-5 h-5" />
+                <span className="text-sm font-medium capitalize">{service.status}</span>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </div>
