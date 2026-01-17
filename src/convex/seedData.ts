@@ -6,15 +6,20 @@ export const seedTestData = internalMutation({
     // Create a test user
     const userId = await ctx.db.insert("users", {
       username: "demo",
-      email: "demo@mound.lol",
-      title: "Demo User",
-      bio: "This is a demo profile showcasing all the features of mound.lol!",
-      sessionToken: "test_session_demo_user",
       isPublished: true,
-      viewCount: 42,
+      viewCount: 1250,
+      sessionToken: "demo-session-token",
+      title: "Demo User",
+      bio: "This is a demo profile to showcase the features of mound.lol. You can customize your profile, add links, and more!",
+      theme: "default",
+      customColors: {
+        background: "#000000",
+        text: "#ffffff",
+        accent: "#ff00ff",
+      },
     });
 
-    // Add some test links
+    // Add some demo links
     const links = [
       {
         platform: "tiktok",

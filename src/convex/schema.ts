@@ -4,7 +4,6 @@ import { v } from "convex/values";
 export default defineSchema({
   users: defineTable({
     username: v.string(),
-    email: v.optional(v.string()),
     profilePicture: v.optional(v.string()),
     bio: v.optional(v.string()),
     title: v.optional(v.string()),
@@ -21,7 +20,6 @@ export default defineSchema({
     sessionToken: v.optional(v.string()),
     tokenIdentifier: v.optional(v.string()),
     customDomain: v.optional(v.string()),
-    password: v.optional(v.string()),
     seoTitle: v.optional(v.string()),
     seoDescription: v.optional(v.string()),
     customCss: v.optional(v.string()),
@@ -38,6 +36,7 @@ export default defineSchema({
     discordUsername: v.optional(v.string()),
     discordAvatar: v.optional(v.string()),
     showDiscordPresence: v.optional(v.boolean()),
+    email: v.optional(v.string()),
   })
     .index("by_username", ["username"])
     .index("by_session", ["sessionToken"])

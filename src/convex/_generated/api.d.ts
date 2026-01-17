@@ -13,6 +13,7 @@ import type * as badges from "../badges.js";
 import type * as discord from "../discord.js";
 import type * as http from "../http.js";
 import type * as links from "../links.js";
+import type * as migrations from "../migrations.js";
 import type * as seedData from "../seedData.js";
 import type * as status from "../status.js";
 import type * as users from "../users.js";
@@ -29,6 +30,7 @@ declare const fullApi: ApiFromModules<{
   discord: typeof discord;
   http: typeof http;
   links: typeof links;
+  migrations: typeof migrations;
   seedData: typeof seedData;
   status: typeof status;
   users: typeof users;
