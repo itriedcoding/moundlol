@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Music } from "lucide-react";
+import { Music, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
 import { HelpCircle } from "lucide-react";
 import {
@@ -11,6 +11,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useAction } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface IntegrationSettingsProps {
   profileData: any;
@@ -27,6 +31,43 @@ export function IntegrationSettings({
   handleDiscordLogin,
   handleUnlinkDiscord
 }: IntegrationSettingsProps) {
+  const getGuildWidget = useAction(api.discord.getGuildWidget);
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  const handleVerifyWidget = async () => {
+    if (!profileData.discordGuildId) {
+        toast.error("Please enter a Server ID first");
+        return;
+    }
+    
+    setIsVerifying(true);
+    try {
+        const data = await getGuildWidget({ guildId: profileData.discordGuildId });
+        
+        if (!data) {
+            toast.error("Could not fetch widget. Is 'Enable Widget' turned on in Server Settings?");
+            return;
+        }
+        
+        if (!data.members) {
+             toast.error("Widget fetched but no members list found.");
+             return;
+        }
+
+        const member = data.members.find((m: any) => m.id === user.discordId);
+        
+        if (member) {
+            toast.success(`Success! Found you as ${member.status} (${member.game ? "Playing " + member.game.name : "No Activity"})`);
+        } else {
+            toast.warning("Widget accessible, but you were not found in the list. You might be offline or invisible.");
+        }
+    } catch (e) {
+        toast.error("Failed to verify widget");
+    } finally {
+        setIsVerifying(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div>
@@ -87,15 +128,25 @@ export function IntegrationSettings({
                             </Tooltip>
                         </TooltipProvider>
                     </div>
-                    <Input
-                        id="guildId"
-                        value={profileData.discordGuildId || ""}
-                        onChange={(e) =>
-                            setProfileData({ ...profileData, discordGuildId: e.target.value })
-                        }
-                        placeholder="e.g. 123456789012345678"
-                        className="bg-black/20 border-white/10 focus:border-[#5865F2]/50"
-                    />
+                    <div className="flex gap-2">
+                        <Input
+                            id="guildId"
+                            value={profileData.discordGuildId || ""}
+                            onChange={(e) =>
+                                setProfileData({ ...profileData, discordGuildId: e.target.value })
+                            }
+                            placeholder="e.g. 123456789012345678"
+                            className="bg-black/20 border-white/10 focus:border-[#5865F2]/50"
+                        />
+                        <Button 
+                            onClick={handleVerifyWidget}
+                            disabled={isVerifying || !profileData.discordGuildId}
+                            variant="outline"
+                            className="border-white/10 hover:bg-white/5"
+                        >
+                            {isVerifying ? <Loader2 className="w-4 h-4 animate-spin" /> : "Test"}
+                        </Button>
+                    </div>
                     <p className="text-xs text-muted-foreground mt-2">
                         Required for real-time status. You must be a member of this server and visible in the widget list.
                     </p>
