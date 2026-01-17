@@ -1,74 +1,15 @@
 import { motion } from "framer-motion";
 import { BadgeCheck } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
-import { useEffect, useState } from "react";
 
 interface ProfileHeaderProps {
   user: any;
   badges: any[];
 }
 
-interface LanyardData {
-  discord_status: "online" | "idle" | "dnd" | "offline";
-  activities: Array<{
-    type: number;
-    name: string;
-    state?: string;
-    details?: string;
-    application_id?: string;
-    assets?: {
-      large_image?: string;
-      small_image?: string;
-    };
-  }>;
-  discord_user: {
-    username: string;
-    discriminator: string;
-    avatar: string;
-    id: string;
-  };
-}
-
 export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
-  const [lanyardData, setLanyardData] = useState<LanyardData | null>(null);
-
-  useEffect(() => {
-    if (user?.discordId && user?.showDiscordPresence) {
-      const fetchLanyard = async () => {
-        try {
-          const response = await fetch(`https://api.lanyard.rest/v1/users/${user.discordId}`);
-          const data = await response.json();
-          if (data.success) {
-            setLanyardData(data.data);
-          }
-        } catch (e) {
-          console.error("Failed to fetch Lanyard data", e);
-        }
-      };
-
-      fetchLanyard();
-      const interval = setInterval(fetchLanyard, 30000); // Update every 30s
-      return () => clearInterval(interval);
-    }
-  }, [user?.discordId, user?.showDiscordPresence]);
-
-  const getStatusColor = (status?: string) => {
-    switch (status) {
-      case "online": return "#23a559";
-      case "idle": return "#f0b232";
-      case "dnd": return "#f23f43";
-      default: return "#80848e";
-    }
-  };
-
-  const getStatusLabel = (status?: string) => {
-    switch (status) {
-      case "online": return "Online";
-      case "idle": return "Idle";
-      case "dnd": return "Do Not Disturb";
-      default: return "Offline";
-    }
-  };
+  // Removed Lanyard integration as requested to avoid server joining requirements.
+  // We will display the static rich profile data (Banner, Avatar, Name) stored in our DB.
 
   return (
     <motion.div
@@ -115,7 +56,7 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
           {user.title || `@${user.username}`}
         </h1>
         
-        {/* Discord Presence Card */}
+        {/* Discord Profile Card (Static Rich Data) */}
         {user.showDiscordPresence && user.discordUsername && (
             <div className="mt-4 w-full max-w-[340px] mx-auto perspective-1000">
                 <div 
@@ -130,20 +71,7 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
                             backgroundSize: 'cover',
                             backgroundPosition: 'center'
                         }}
-                    >
-                         {/* Status Badge (Top Right) */}
-                         {lanyardData && (
-                            <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md px-2 py-1 rounded-md border border-white/10 flex items-center gap-1.5">
-                                <div 
-                                    className="w-2.5 h-2.5 rounded-full"
-                                    style={{ backgroundColor: getStatusColor(lanyardData.discord_status) }}
-                                />
-                                <span className="text-xs font-bold text-white uppercase tracking-wide">
-                                    {getStatusLabel(lanyardData.discord_status)}
-                                </span>
-                            </div>
-                         )}
-                    </div>
+                    />
                     
                     <div className="px-5 pb-5 relative">
                         {/* Avatar */}
@@ -156,14 +84,6 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
                                         <FaDiscord className="text-white w-10 h-10" />
                                     </div>
                                 )}
-                                
-                                {/* Status Indicator (Bottom Right of Avatar) */}
-                                {lanyardData && (
-                                    <div 
-                                        className="absolute bottom-0 right-0 w-6 h-6 rounded-full border-[4px] border-[#111214]"
-                                        style={{ backgroundColor: getStatusColor(lanyardData.discord_status) }}
-                                    />
-                                )}
                             </div>
                         </div>
 
@@ -173,52 +93,15 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
                                 <h3 className="text-white font-bold text-xl leading-tight">
                                     {user.discordGlobalName || user.discordUsername}
                                 </h3>
-                                {lanyardData?.discord_user?.discriminator !== "0" && (
-                                     <span className="text-[#949BA4] text-lg">#{lanyardData?.discord_user?.discriminator || '0000'}</span>
+                                {user.discordDiscriminator && user.discordDiscriminator !== "0" && (
+                                     <span className="text-[#949BA4] text-lg">#{user.discordDiscriminator}</span>
                                 )}
                             </div>
                             <p className="text-[#949BA4] text-sm font-medium mb-4">
                                 {user.discordUsername}
                             </p>
                             
-                            <div className="h-[1px] w-full bg-[#2e3035] mb-4" />
-
-                            {/* Activities */}
-                            {lanyardData?.activities && lanyardData.activities.length > 0 ? (
-                                <div className="space-y-3">
-                                    {lanyardData.activities.filter(a => a.type !== 4).map((activity, i) => (
-                                        <div key={i} className="flex items-center gap-3">
-                                            {activity.assets?.large_image ? (
-                                                <img 
-                                                    src={`https://cdn.discordapp.com/app-assets/${activity.application_id || ''}/${activity.assets.large_image}.png`}
-                                                    className="w-10 h-10 rounded-lg"
-                                                    onError={(e) => e.currentTarget.style.display = 'none'}
-                                                />
-                                            ) : (
-                                                <div className="w-10 h-10 rounded-lg bg-[#5865F2]/20 flex items-center justify-center">
-                                                    <FaDiscord className="text-[#5865F2]" />
-                                                </div>
-                                            )}
-                                            <div className="overflow-hidden">
-                                                <p className="text-xs font-bold text-white truncate">{activity.name}</p>
-                                                {activity.details && <p className="text-xs text-[#949BA4] truncate">{activity.details}</p>}
-                                                {activity.state && <p className="text-xs text-[#949BA4] truncate">{activity.state}</p>}
-                                            </div>
-                                        </div>
-                                    ))}
-                                    {/* Custom Status */}
-                                    {lanyardData.activities.find(a => a.type === 4) && (
-                                        <div className="text-sm text-[#dbdee1]">
-                                            {lanyardData.activities.find(a => a.type === 4)?.state}
-                                        </div>
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="flex items-center gap-2 p-2 rounded-lg bg-[#1e1f22]/50 border border-white/5">
-                                    <div className="w-2 h-2 rounded-full bg-gray-500" />
-                                    <p className="text-xs text-[#949BA4] font-medium">No active status</p>
-                                </div>
-                            )}
+                            {/* We removed the real-time status/activities section as it requires Lanyard/Server Joining */}
                         </div>
                     </div>
                 </div>
