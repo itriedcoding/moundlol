@@ -30,7 +30,7 @@ export const claimUsername = mutation({
     username: v.string(),
   },
   handler: async (ctx, args) => {
-    const username = args.username.toLowerCase().trim();
+    const username = args.username.toLowerCase();
 
     // Check if username is available
     const existing = await ctx.db
@@ -51,7 +51,7 @@ export const claimUsername = mutation({
       viewCount: 0,
     });
 
-    return { userId: newUserId, username, sessionToken };
+    return { sessionToken };
   },
 });
 
@@ -284,4 +284,21 @@ export const unlinkDiscordAccount = mutation({
             showDiscordPresence: undefined,
         });
     }
+});
+
+export const updatePublishedStatus = mutation({
+  args: { 
+    sessionToken: v.string(),
+    isPublished: v.boolean() 
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_session", (q) => q.eq("sessionToken", args.sessionToken))
+      .unique();
+
+    if (!user) throw new Error("User not found");
+
+    await ctx.db.patch(user._id, { isPublished: args.isPublished });
+  },
 });

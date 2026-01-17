@@ -84,10 +84,13 @@ export function LandingHero() {
               <Button 
                 size="lg"
                 disabled={isClaiming || !username}
-                className="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-[0_0_20px_rgba(255,20,147,0.4)] transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(255,20,147,0.6)]"
+                className="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-[0_0_20px_rgba(255,20,147,0.4)] transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] disabled:opacity-70 disabled:hover:scale-100"
               >
                 {isClaiming ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Claiming...</span>
+                  </div>
                 ) : (
                   <div className="flex items-center gap-2">
                     Claim <ArrowRight className="w-4 h-4" />

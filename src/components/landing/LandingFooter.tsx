@@ -61,8 +61,6 @@ export function LandingFooter() {
           <p className="text-sm text-muted-foreground">
             © {currentYear} mound.lol. All rights reserved.
           </p>
-          
-          {/* Icons removed as requested */}
         </div>
       </div>
     </footer>
