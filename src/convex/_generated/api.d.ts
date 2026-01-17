@@ -9,6 +9,8 @@
  */
 
 import type * as analytics from "../analytics.js";
+import type * as badges from "../badges.js";
+import type * as http from "../http.js";
 import type * as links from "../links.js";
 import type * as seedData from "../seedData.js";
 import type * as users from "../users.js";
@@ -21,6 +23,8 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   analytics: typeof analytics;
+  badges: typeof badges;
+  http: typeof http;
   links: typeof links;
   seedData: typeof seedData;
   users: typeof users;

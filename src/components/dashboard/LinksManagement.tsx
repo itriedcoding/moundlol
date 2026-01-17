@@ -9,7 +9,17 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Link as LinkIcon, Plus, Trash2, Eye, EyeOff } from "lucide-react";
+import { 
+  FaTiktok, FaInstagram, FaTwitter, FaYoutube, FaTwitch,
+  FaWhatsapp, FaTelegram, FaDiscord, FaSpotify, FaLinkedin,
+  FaFacebook, FaSnapchat, FaReddit, FaGithub, FaPatreon,
+  FaPinterest, FaTumblr, FaVimeo, FaMedium, FaPaypal
+} from "react-icons/fa";
+import { 
+  SiOnlyfans, SiSoundcloud, SiCashapp, SiVenmo, SiKofi,
+  SiBuymeacoffee, SiSubstack, SiX
+} from "react-icons/si";
+import { Globe, Mail, Link as LinkIcon, Plus, Eye, EyeOff, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
@@ -17,37 +27,37 @@ import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 
 const SOCIAL_PLATFORMS = [
-  { value: "tiktok", label: "TikTok", icon: "🎵" },
-  { value: "instagram", label: "Instagram", icon: "📷" },
-  { value: "twitter", label: "X (Twitter)", icon: "🐦" },
-  { value: "youtube", label: "YouTube", icon: "▶️" },
-  { value: "twitch", label: "Twitch", icon: "🎮" },
-  { value: "onlyfans", label: "OnlyFans", icon: "💋" },
+  { value: "tiktok", label: "TikTok", icon: <FaTiktok /> },
+  { value: "instagram", label: "Instagram", icon: <FaInstagram /> },
+  { value: "twitter", label: "X (Twitter)", icon: <SiX /> },
+  { value: "youtube", label: "YouTube", icon: <FaYoutube /> },
+  { value: "twitch", label: "Twitch", icon: <FaTwitch /> },
+  { value: "onlyfans", label: "OnlyFans", icon: <SiOnlyfans /> },
   { value: "fansly", label: "Fansly", icon: "💎" },
-  { value: "whatsapp", label: "WhatsApp", icon: "💬" },
-  { value: "telegram", label: "Telegram", icon: "✈️" },
-  { value: "discord", label: "Discord", icon: "🎮" },
-  { value: "spotify", label: "Spotify", icon: "🎵" },
-  { value: "soundcloud", label: "SoundCloud", icon: "🎧" },
-  { value: "patreon", label: "Patreon", icon: "🎨" },
-  { value: "kofi", label: "Ko-fi", icon: "☕" },
-  { value: "buymeacoffee", label: "Buy Me a Coffee", icon: "☕" },
-  { value: "linkedin", label: "LinkedIn", icon: "💼" },
-  { value: "facebook", label: "Facebook", icon: "📘" },
-  { value: "snapchat", label: "Snapchat", icon: "👻" },
-  { value: "reddit", label: "Reddit", icon: "🤖" },
-  { value: "github", label: "GitHub", icon: "💻" },
-  { value: "pinterest", label: "Pinterest", icon: "📌" },
-  { value: "medium", label: "Medium", icon: "📝" },
-  { value: "substack", label: "Substack", icon: "📰" },
-  { value: "vimeo", label: "Vimeo", icon: "🎬" },
-  { value: "tumblr", label: "Tumblr", icon: "📱" },
-  { value: "paypal", label: "PayPal", icon: "💳" },
-  { value: "cashapp", label: "Cash App", icon: "💵" },
-  { value: "venmo", label: "Venmo", icon: "💰" },
-  { value: "website", label: "Website", icon: "🌐" },
-  { value: "email", label: "Email", icon: "📧" },
-  { value: "custom", label: "Custom Link", icon: "🔗" },
+  { value: "whatsapp", label: "WhatsApp", icon: <FaWhatsapp /> },
+  { value: "telegram", label: "Telegram", icon: <FaTelegram /> },
+  { value: "discord", label: "Discord", icon: <FaDiscord /> },
+  { value: "spotify", label: "Spotify", icon: <FaSpotify /> },
+  { value: "soundcloud", label: "SoundCloud", icon: <SiSoundcloud /> },
+  { value: "patreon", label: "Patreon", icon: <FaPatreon /> },
+  { value: "kofi", label: "Ko-fi", icon: <SiKofi /> },
+  { value: "buymeacoffee", label: "Buy Me a Coffee", icon: <SiBuymeacoffee /> },
+  { value: "linkedin", label: "LinkedIn", icon: <FaLinkedin /> },
+  { value: "facebook", label: "Facebook", icon: <FaFacebook /> },
+  { value: "snapchat", label: "Snapchat", icon: <FaSnapchat /> },
+  { value: "reddit", label: "Reddit", icon: <FaReddit /> },
+  { value: "github", label: "GitHub", icon: <FaGithub /> },
+  { value: "pinterest", label: "Pinterest", icon: <FaPinterest /> },
+  { value: "medium", label: "Medium", icon: <FaMedium /> },
+  { value: "substack", label: "Substack", icon: <SiSubstack /> },
+  { value: "vimeo", label: "Vimeo", icon: <FaVimeo /> },
+  { value: "tumblr", label: "Tumblr", icon: <FaTumblr /> },
+  { value: "paypal", label: "PayPal", icon: <FaPaypal /> },
+  { value: "cashapp", label: "Cash App", icon: <SiCashapp /> },
+  { value: "venmo", label: "Venmo", icon: <SiVenmo /> },
+  { value: "website", label: "Website", icon: <Globe className="w-4 h-4" /> },
+  { value: "email", label: "Email", icon: <Mail className="w-4 h-4" /> },
+  { value: "custom", label: "Custom Link", icon: <LinkIcon className="w-4 h-4" /> },
 ];
 
 interface LinksManagementProps {
@@ -80,7 +90,6 @@ export function LinksManagement({ sessionToken }: LinksManagementProps) {
         platform: newLink.platform,
         title: newLink.title,
         url: newLink.url,
-        icon: platform?.icon,
       });
       toast.success("Link added!");
       setNewLink({ platform: "custom", title: "", url: "" });
@@ -195,46 +204,51 @@ export function LinksManagement({ sessionToken }: LinksManagementProps) {
             <p>No links yet. Add your first link to get started!</p>
           </div>
         )}
-        {myLinks?.map((link) => (
-          <motion.div
-            key={link._id}
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="flex items-center gap-3 p-4 bg-muted/50 rounded-xl border border-border hover:border-primary/50 transition-colors group"
-          >
-            <div className="text-2xl">{link.icon || "🔗"}</div>
-            <div className="flex-1 min-w-0">
-              <div className="font-semibold truncate">{link.title}</div>
-              <div className="text-sm text-muted-foreground truncate">
-                {link.url}
+        {myLinks?.map((link) => {
+          const platformDef = SOCIAL_PLATFORMS.find(p => p.value === link.platform) || SOCIAL_PLATFORMS.find(p => p.value === "custom");
+          return (
+            <motion.div
+              key={link._id}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="flex items-center gap-3 p-4 bg-muted/50 rounded-xl border border-border hover:border-primary/50 transition-colors group"
+            >
+              <div className="text-2xl text-primary">
+                {platformDef?.icon}
               </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                {link.clickCount} clicks
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold truncate">{link.title}</div>
+                <div className="text-sm text-muted-foreground truncate">
+                  {link.url}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {link.clickCount} clicks
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleToggleVisibility(link._id, link.isVisible)}
-              >
-                {link.isVisible ? (
-                  <Eye className="w-4 h-4" />
-                ) : (
-                  <EyeOff className="w-4 h-4" />
-                )}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleDeleteLink(link._id)}
-                className="text-destructive hover:text-destructive"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-          </motion.div>
-        ))}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleToggleVisibility(link._id, link.isVisible)}
+                >
+                  {link.isVisible ? (
+                    <Eye className="w-4 h-4" />
+                  ) : (
+                    <EyeOff className="w-4 h-4" />
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleDeleteLink(link._id)}
+                  className="text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
     </motion.div>
   );

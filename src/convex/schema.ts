@@ -25,12 +25,14 @@ export default defineSchema({
     seoTitle: v.optional(v.string()),
     seoDescription: v.optional(v.string()),
     customCss: v.optional(v.string()),
-    backgroundType: v.optional(v.string()), // "solid", "gradient", "animated", "video"
-    backgroundValue: v.optional(v.string()),
-    buttonStyle: v.optional(v.string()), // "rounded", "square", "pill", "neumorphic"
+    backgroundType: v.optional(v.string()), // "solid", "gradient", "animated", "video", "image"
+    backgroundValue: v.optional(v.string()), // Hex, gradient string, or URL
+    buttonStyle: v.optional(v.string()), // "rounded", "square", "pill", "neumorphic", "glass"
     font: v.optional(v.string()),
     showSocialProof: v.optional(v.boolean()),
     verified: v.optional(v.boolean()),
+    audioUrl: v.optional(v.string()), // Background audio
+    audioAutoPlay: v.optional(v.boolean()),
   })
     .index("by_username", ["username"])
     .index("by_session", ["sessionToken"])
@@ -58,6 +60,22 @@ export default defineSchema({
     .index("by_user", ["userId"])
     .index("by_user_and_order", ["userId", "order"])
     .index("by_user_and_category", ["userId", "category"]),
+
+  badges: defineTable({
+    name: v.string(),
+    icon: v.string(), // URL or icon name
+    description: v.string(),
+    rarity: v.optional(v.string()), // "common", "rare", "epic", "legendary"
+  }).index("by_name", ["name"]),
+
+  userBadges: defineTable({
+    userId: v.id("users"),
+    badgeId: v.id("badges"),
+    assignedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_badge", ["badgeId"])
+    .index("by_user_and_badge", ["userId", "badgeId"]),
 
   analytics: defineTable({
     userId: v.id("users"),

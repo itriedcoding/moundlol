@@ -78,19 +78,15 @@ export const getUserByUsername = query({
 export const updateProfile = mutation({
   args: {
     sessionToken: v.string(),
-    bio: v.optional(v.string()),
     title: v.optional(v.string()),
+    bio: v.optional(v.string()),
     profilePicture: v.optional(v.string()),
-    email: v.optional(v.string()),
-    customDomain: v.optional(v.string()),
-    seoTitle: v.optional(v.string()),
-    seoDescription: v.optional(v.string()),
     backgroundType: v.optional(v.string()),
     backgroundValue: v.optional(v.string()),
     buttonStyle: v.optional(v.string()),
-    font: v.optional(v.string()),
-    showSocialProof: v.optional(v.boolean()),
-    customCss: v.optional(v.string()),
+    audioUrl: v.optional(v.string()),
+    audioAutoPlay: v.optional(v.boolean()),
+    theme: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db
@@ -98,26 +94,19 @@ export const updateProfile = mutation({
       .withIndex("by_session", (q) => q.eq("sessionToken", args.sessionToken))
       .unique();
 
-    if (!user) throw new Error("User not found");
+    if (!user) throw new Error("Unauthorized");
 
-    const updates: any = {};
-    if (args.bio !== undefined) updates.bio = args.bio;
-    if (args.title !== undefined) updates.title = args.title;
-    if (args.profilePicture !== undefined) updates.profilePicture = args.profilePicture;
-    if (args.email !== undefined) updates.email = args.email;
-    if (args.customDomain !== undefined) updates.customDomain = args.customDomain;
-    if (args.seoTitle !== undefined) updates.seoTitle = args.seoTitle;
-    if (args.seoDescription !== undefined) updates.seoDescription = args.seoDescription;
-    if (args.backgroundType !== undefined) updates.backgroundType = args.backgroundType;
-    if (args.backgroundValue !== undefined) updates.backgroundValue = args.backgroundValue;
-    if (args.buttonStyle !== undefined) updates.buttonStyle = args.buttonStyle;
-    if (args.font !== undefined) updates.font = args.font;
-    if (args.showSocialProof !== undefined) updates.showSocialProof = args.showSocialProof;
-    if (args.customCss !== undefined) updates.customCss = args.customCss;
-
-    await ctx.db.patch(user._id, updates);
-
-    return { success: true };
+    await ctx.db.patch(user._id, {
+      title: args.title,
+      bio: args.bio,
+      profilePicture: args.profilePicture,
+      backgroundType: args.backgroundType,
+      backgroundValue: args.backgroundValue,
+      buttonStyle: args.buttonStyle,
+      audioUrl: args.audioUrl,
+      audioAutoPlay: args.audioAutoPlay,
+      theme: args.theme,
+    });
   },
 });
 
