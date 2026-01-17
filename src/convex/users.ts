@@ -21,7 +21,6 @@ export const checkUsername = query({
 export const claimUsername = mutation({
   args: {
     username: v.string(),
-    email: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const username = args.username.toLowerCase().trim();
@@ -40,7 +39,6 @@ export const claimUsername = mutation({
     const sessionToken = generateSessionToken();
     const newUserId = await ctx.db.insert("users", {
       username,
-      email: args.email,
       sessionToken,
       isPublished: true,
       viewCount: 0,
@@ -142,64 +140,6 @@ export const incrementViewCount = mutation({
     await ctx.db.patch(user._id, {
       viewCount: user.viewCount + 1,
     });
-  },
-});
-
-export const setPassword = mutation({
-  args: {
-    sessionToken: v.string(),
-    password: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_session", (q) => q.eq("sessionToken", args.sessionToken))
-      .unique();
-
-    if (!user) throw new Error("User not found");
-
-    // Simple password storage (in production, use proper hashing)
-    await ctx.db.patch(user._id, {
-      password: args.password,
-    });
-
-    return { success: true };
-  },
-});
-
-export const verifyPassword = query({
-  args: {
-    username: v.string(),
-    password: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_username", (q) => q.eq("username", args.username))
-      .unique();
-
-    if (!user || !user.password) return { valid: false };
-
-    return { valid: user.password === args.password };
-  },
-});
-
-export const login = mutation({
-  args: {
-    username: v.string(),
-    password: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_username", (q) => q.eq("username", args.username.toLowerCase().trim()))
-      .unique();
-
-    if (!user || !user.password || user.password !== args.password) {
-      throw new Error("Invalid username or password");
-    }
-
-    return { sessionToken: user.sessionToken };
   },
 });
 

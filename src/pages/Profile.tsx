@@ -15,7 +15,6 @@ import { ProfileLinks } from "@/components/profile/ProfileLinks";
 export default function Profile() {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
   const [isClaiming, setIsClaiming] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -39,7 +38,6 @@ export default function Profile() {
     try {
       const result = await claimUsername({
         username: username.toLowerCase().trim(),
-        email: email || undefined,
       });
 
       setSessionToken(result.sessionToken);
@@ -144,20 +142,6 @@ export default function Profile() {
           </p>
 
           <div className="space-y-4 mb-6">
-            <div className="text-left">
-              <Label htmlFor="email" className="text-sm text-muted-foreground mb-2 block">
-                Email (optional)
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                className="bg-background/50 border-primary/30 focus:border-primary"
-              />
-            </div>
-
             <Button
               onClick={handleClaimUsername}
               disabled={isClaiming}
