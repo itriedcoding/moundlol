@@ -264,7 +264,7 @@ export const discordAuth = action({
             try {
                 const errorData = JSON.parse(text);
                 if (errorData.error === 'invalid_client') {
-                    errorMessage = "Configuration Error: Invalid Discord Client ID or Client Secret. Please check your Convex Dashboard Environment Variables.";
+                    errorMessage = "Configuration Error: Invalid Discord Client ID or Client Secret. Please update your Environment Variables in the Integrations or API Keys tab.";
                 } else if (errorData.error === 'invalid_grant') {
                     errorMessage = "Authorization Error: Invalid or expired code. Please try again.";
                 } else if (errorData.error === 'redirect_uri_mismatch') {
