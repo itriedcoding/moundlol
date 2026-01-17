@@ -166,7 +166,7 @@ export const registerCommands = internalAction({
   args: {},
   handler: async (ctx) => {
     const token = process.env.DISCORD_BOT_TOKEN;
-    const clientId = process.env.DISCORD_CLIENT_ID;
+    const clientId = process.env.DISCORD_CLIENT_ID || "1458362723959181435";
 
     if (!token || !clientId) {
       throw new Error("Missing DISCORD_BOT_TOKEN or DISCORD_CLIENT_ID");
@@ -238,8 +238,8 @@ export const registerCommands = internalAction({
 export const discordAuth = action({
     args: { code: v.string(), redirectUri: v.string() },
     handler: async (ctx, args) => {
-        const clientId = process.env.DISCORD_CLIENT_ID;
-        const clientSecret = process.env.DISCORD_CLIENT_SECRET;
+        const clientId = process.env.DISCORD_CLIENT_ID || "1458362723959181435";
+        const clientSecret = process.env.DISCORD_CLIENT_SECRET || "of8ZUQkMoxMl3Noy38lbYUrMbpK1MQkU";
 
         if (!clientId || !clientSecret) throw new Error("Missing Discord OAuth credentials");
 
