@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Music, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { Music, Loader2, CheckCircle2, XCircle, Bot } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
 import { HelpCircle } from "lucide-react";
 import {
@@ -35,7 +35,9 @@ export function IntegrationSettings({
 }: IntegrationSettingsProps) {
   const getGuildWidget = useAction(api.discord.getGuildWidget);
   const getGuildMember = useAction(api.discord.getGuildMember);
+  const registerCommands = useAction(api.discord.registerCommands);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const handleVerifyWidget = async () => {
     setIsVerifying(true);
@@ -73,6 +75,18 @@ export function IntegrationSettings({
         toast.error("Failed to verify status connection");
     } finally {
         setIsVerifying(false);
+    }
+  };
+
+  const handleRegisterCommands = async () => {
+    setIsRegistering(true);
+    try {
+        await registerCommands({});
+        toast.success("Slash commands registered successfully!");
+    } catch (e: any) {
+        toast.error("Failed to register commands: " + e.message);
+    } finally {
+        setIsRegistering(false);
     }
   };
 
@@ -152,6 +166,31 @@ export function IntegrationSettings({
                  </div>
               </div>
             )}
+        </div>
+      </div>
+
+      <div className="pt-8 border-t border-white/5">
+        <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+          <div className="p-2 bg-purple-500/10 rounded-lg">
+            <Bot className="w-5 h-5 text-purple-400" />
+          </div>
+          Discord Bot
+        </h2>
+        <div className="space-y-5">
+            <div className="p-6 bg-black/20 border border-white/10 rounded-xl">
+                <p className="text-sm text-muted-foreground mb-4">
+                    Ensure you have added your <code>DISCORD_BOT_TOKEN</code> and <code>DISCORD_CLIENT_ID</code> in the Convex Dashboard.
+                    Then, click below to register the slash commands (<code>/profile</code>, <code>/assignbadge</code>, etc.) to your bot.
+                </p>
+                <Button 
+                    onClick={handleRegisterCommands} 
+                    disabled={isRegistering}
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                    {isRegistering ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Bot className="w-4 h-4 mr-2" />}
+                    Register Slash Commands
+                </Button>
+            </div>
         </div>
       </div>
 

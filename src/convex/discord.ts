@@ -112,6 +112,58 @@ export const interactionHandler = action({
         }
       }
 
+      if (name === "profile") {
+        const usernameOption = options?.find((o: any) => o.name === "username");
+        if (!usernameOption) {
+             return {
+                status: 200,
+                body: JSON.stringify({
+                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                    data: { content: "Missing required option: username" },
+                }),
+                headers: { "Content-Type": "application/json" },
+            };
+        }
+
+        const user = await ctx.runQuery(api.users.getUserByUsername, { username: usernameOption.value });
+
+        if (!user) {
+            return {
+                status: 200,
+                body: JSON.stringify({
+                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                    data: { content: `User **${usernameOption.value}** not found.` },
+                }),
+                headers: { "Content-Type": "application/json" },
+            };
+        }
+
+        // Construct profile URL
+        const profileUrl = process.env.CONVEX_SITE_URL ? `${process.env.CONVEX_SITE_URL}/${user.username}` : `https://mound.lol/${user.username}`;
+
+        return {
+            status: 200,
+            body: JSON.stringify({
+                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                data: {
+                    embeds: [{
+                        title: user.title || `@${user.username}`,
+                        url: profileUrl,
+                        description: user.bio || "No bio set.",
+                        thumbnail: user.profilePicture ? { url: user.profilePicture } : undefined,
+                        color: 0x5865F2,
+                        fields: [
+                            { name: "Views", value: user.viewCount.toString(), inline: true },
+                            { name: "Joined", value: new Date(user._creationTime).toLocaleDateString(), inline: true }
+                        ],
+                        footer: { text: "BioLink Hub Profile" }
+                    }]
+                },
+            }),
+            headers: { "Content-Type": "application/json" },
+        };
+      }
+
       if (name === "assignbadge") {
         // Options: user (string username), badge (string name), icon (string url), description (string)
         const usernameOption = options?.find((o: any) => o.name === "username");
@@ -168,14 +220,14 @@ export const interactionHandler = action({
   },
 });
 
-export const registerCommands = internalAction({
+export const registerCommands = action({
   args: {},
   handler: async (ctx) => {
     const token = process.env.DISCORD_BOT_TOKEN;
-    const clientId = process.env.DISCORD_CLIENT_ID || "1458362723959181435";
+    const clientId = process.env.DISCORD_CLIENT_ID;
 
     if (!token || !clientId) {
-      throw new Error("Missing DISCORD_BOT_TOKEN or DISCORD_CLIENT_ID");
+      throw new Error("Missing DISCORD_BOT_TOKEN or DISCORD_CLIENT_ID in environment variables.");
     }
 
     const commands = [
@@ -186,6 +238,18 @@ export const registerCommands = internalAction({
       {
         name: "stats",
         description: "Get current website statistics",
+      },
+      {
+        name: "profile",
+        description: "Look up a user profile",
+        options: [
+            {
+                name: "username",
+                description: "The username to look up",
+                type: 3, // STRING
+                required: true
+            }
+        ]
       },
       {
         name: "assignbadge",
