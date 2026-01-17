@@ -16,6 +16,7 @@ import type * as links from "../links.js";
 import type * as migrations from "../migrations.js";
 import type * as seedData from "../seedData.js";
 import type * as status from "../status.js";
+import type * as testing from "../testing.js";
 import type * as users from "../users.js";
 
 import type {
@@ -33,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   migrations: typeof migrations;
   seedData: typeof seedData;
   status: typeof status;
+  testing: typeof testing;
   users: typeof users;
 }>;
 
