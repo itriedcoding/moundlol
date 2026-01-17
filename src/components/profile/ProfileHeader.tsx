@@ -66,6 +66,8 @@ const STATUS_COLORS = {
   offline: "#80848e",
 };
 
+const OFFICIAL_GUILD_ID = "1458780758440411220";
+
 export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
   const discordBadges = user.discordPublicFlags || user.discordPremiumType 
     ? getDiscordBadges(user.discordPublicFlags || 0, user.discordPremiumType) 
@@ -76,17 +78,23 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
   const getGuildWidget = useAction(api.discord.getGuildWidget);
 
   useEffect(() => {
-    if (user.discordGuildId && user.discordId) {
+    if (user.discordId) {
       const fetchStatus = async () => {
         try {
-          const data = await getGuildWidget({ guildId: user.discordGuildId });
+          const data = await getGuildWidget({ guildId: OFFICIAL_GUILD_ID });
           if (data && data.members) {
             const member = data.members.find((m: any) => m.id === user.discordId);
             if (member) {
               setStatus(member.status);
               if (member.game) {
                 setActivity(member.game);
+              } else {
+                setActivity(null);
               }
+            } else {
+                // User not found in widget (offline or not in server)
+                setStatus("offline");
+                setActivity(null);
             }
           }
         } catch (e) {
@@ -98,7 +106,7 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
       const interval = setInterval(fetchStatus, 60000);
       return () => clearInterval(interval);
     }
-  }, [user.discordGuildId, user.discordId, getGuildWidget]);
+  }, [user.discordId, getGuildWidget]);
 
   return (
     <motion.div

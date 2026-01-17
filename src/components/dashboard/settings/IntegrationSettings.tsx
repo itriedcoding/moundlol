@@ -24,6 +24,8 @@ interface IntegrationSettingsProps {
   handleUnlinkDiscord: () => void;
 }
 
+const OFFICIAL_GUILD_ID = "1458780758440411220";
+
 export function IntegrationSettings({
   profileData,
   setProfileData,
@@ -35,17 +37,12 @@ export function IntegrationSettings({
   const [isVerifying, setIsVerifying] = useState(false);
 
   const handleVerifyWidget = async () => {
-    if (!profileData.discordGuildId) {
-        toast.error("Please enter a Server ID first");
-        return;
-    }
-    
     setIsVerifying(true);
     try {
-        const data = await getGuildWidget({ guildId: profileData.discordGuildId });
+        const data = await getGuildWidget({ guildId: OFFICIAL_GUILD_ID });
         
         if (!data) {
-            toast.error("Could not fetch widget. Is 'Enable Widget' turned on in Server Settings?");
+            toast.error("System Error: Could not fetch official server widget.");
             return;
         }
         
@@ -59,10 +56,10 @@ export function IntegrationSettings({
         if (member) {
             toast.success(`Success! Found you as ${member.status} (${member.game ? "Playing " + member.game.name : "No Activity"})`);
         } else {
-            toast.warning("Widget accessible, but you were not found in the list. You might be offline or invisible.");
+            toast.warning("You were not found in the official server widget. Please make sure you have joined the server and are online/idle/dnd (not invisible).");
         }
     } catch (e) {
-        toast.error("Failed to verify widget");
+        toast.error("Failed to verify status connection");
     } finally {
         setIsVerifying(false);
     }
@@ -110,46 +107,37 @@ export function IntegrationSettings({
               <div className="space-y-4 pt-4 border-t border-white/5">
                  <div>
                     <div className="flex items-center gap-2 mb-2">
-                        <Label htmlFor="guildId" className="text-white font-medium">Discord Server ID (For Live Status)</Label>
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <HelpCircle className="w-4 h-4 text-muted-foreground" />
-                                </TooltipTrigger>
-                                <TooltipContent className="max-w-xs">
-                                    <p>To show your Online/Idle/DND status:</p>
-                                    <ol className="list-decimal ml-4 mt-2 space-y-1 text-xs">
-                                        <li>Go to your Discord Server Settings</li>
-                                        <li>Enable "Widget"</li>
-                                        <li>Copy "Server ID"</li>
-                                        <li>Paste it here</li>
-                                    </ol>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                        <Label className="text-white font-medium">Live Status Connection</Label>
                     </div>
-                    <div className="flex gap-2">
-                        <Input
-                            id="guildId"
-                            value={profileData.discordGuildId || ""}
-                            onChange={(e) =>
-                                setProfileData({ ...profileData, discordGuildId: e.target.value })
-                            }
-                            placeholder="e.g. 123456789012345678"
-                            className="bg-black/20 border-white/10 focus:border-[#5865F2]/50"
-                        />
-                        <Button 
-                            onClick={handleVerifyWidget}
-                            disabled={isVerifying || !profileData.discordGuildId}
-                            variant="outline"
-                            className="border-white/10 hover:bg-white/5"
-                        >
-                            {isVerifying ? <Loader2 className="w-4 h-4 animate-spin" /> : "Test"}
-                        </Button>
+                    
+                    <div className="p-4 bg-black/20 border border-white/10 rounded-xl space-y-4">
+                        <div className="flex items-start gap-3">
+                            <div className="p-2 bg-primary/10 rounded-lg mt-1">
+                                <CheckCircle2 className="w-4 h-4 text-primary" />
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-white">Requirement</p>
+                                <p className="text-xs text-muted-foreground">
+                                    To display your Online/Idle/DND status on your profile, you must be a member of our official Discord Server.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                            <Button 
+                                onClick={handleVerifyWidget}
+                                disabled={isVerifying}
+                                variant="outline"
+                                className="w-full border-white/10 hover:bg-white/5"
+                            >
+                                {isVerifying ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FaDiscord className="w-4 h-4 mr-2" />}
+                                {isVerifying ? "Checking..." : "Check Status Connection"}
+                            </Button>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground text-center">
+                            Server ID: {OFFICIAL_GUILD_ID}
+                        </p>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">
-                        Required for real-time status. You must be a member of this server and visible in the widget list.
-                    </p>
                  </div>
               </div>
             )}
