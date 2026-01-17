@@ -238,8 +238,8 @@ export const registerCommands = internalAction({
 export const discordAuth = action({
     args: { code: v.string(), redirectUri: v.string() },
     handler: async (ctx, args) => {
-        const clientId = process.env.DISCORD_CLIENT_ID;
-        const clientSecret = process.env.DISCORD_CLIENT_SECRET;
+        const clientId = process.env.DISCORD_CLIENT_ID?.trim();
+        const clientSecret = process.env.DISCORD_CLIENT_SECRET?.trim();
 
         if (!clientId || !clientSecret) throw new Error("Missing Discord OAuth credentials in environment variables");
 
@@ -264,7 +264,7 @@ export const discordAuth = action({
             try {
                 const errorData = JSON.parse(text);
                 if (errorData.error === 'invalid_client') {
-                    errorMessage = "Configuration Error: Invalid Discord Client ID or Client Secret. Please update your Environment Variables in the Integrations or API Keys tab.";
+                    errorMessage = "Configuration Error: Invalid Discord Client ID or Client Secret. Please check for whitespace or incorrect values in your Environment Variables.";
                 } else if (errorData.error === 'invalid_grant') {
                     errorMessage = "Authorization Error: Invalid or expired code. Please try again.";
                 } else if (errorData.error === 'redirect_uri_mismatch') {
