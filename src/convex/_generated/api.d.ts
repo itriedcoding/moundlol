@@ -10,6 +10,7 @@
 
 import type * as analytics from "../analytics.js";
 import type * as badges from "../badges.js";
+import type * as cleanup from "../cleanup.js";
 import type * as discord from "../discord.js";
 import type * as http from "../http.js";
 import type * as links from "../links.js";
@@ -28,6 +29,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   analytics: typeof analytics;
   badges: typeof badges;
+  cleanup: typeof cleanup;
   discord: typeof discord;
   http: typeof http;
   links: typeof links;

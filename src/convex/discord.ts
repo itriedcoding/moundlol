@@ -313,9 +313,14 @@ export const discordAuth = action({
         return {
             discordId: userData.id,
             username: userData.username,
+            global_name: userData.global_name,
             avatar: userData.avatar 
                 ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`
                 : null,
+            banner: userData.banner
+                ? `https://cdn.discordapp.com/banners/${userData.id}/${userData.banner}.png?size=600`
+                : null,
+            accent_color: userData.accent_color,
             discriminator: userData.discriminator
         };
     }

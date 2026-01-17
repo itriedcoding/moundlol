@@ -53,23 +53,65 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
           {user.title || `@${user.username}`}
         </h1>
         
-        {/* Discord Presence */}
+        {/* Discord Presence Card */}
         {user.showDiscordPresence && user.discordUsername && (
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#5865F2]/20 border border-[#5865F2]/30 text-white/90 text-sm backdrop-blur-sm">
-                {user.discordAvatar ? (
-                    <img src={user.discordAvatar} alt="Discord" className="w-4 h-4 rounded-full" />
-                ) : (
-                    <FaDiscord className="text-[#5865F2]" />
-                )}
-                <span>{user.discordUsername}</span>
-                {/* We could add a status indicator here if we had real-time presence */}
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse ml-1" title="Linked"></span>
+            <div className="mt-2 w-full max-w-xs mx-auto">
+                <div 
+                    className="rounded-xl overflow-hidden bg-[#111214] border border-[#1e1f22] shadow-lg"
+                >
+                    {/* Banner */}
+                    <div 
+                        className="h-16 w-full bg-[#5865F2]"
+                        style={{ 
+                            backgroundColor: user.discordAccentColor || '#5865F2',
+                            backgroundImage: user.discordBanner ? `url(${user.discordBanner})` : undefined,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                    />
+                    
+                    <div className="px-4 pb-4 relative">
+                        {/* Avatar */}
+                        <div className="absolute -top-8 left-4">
+                            <div className="w-16 h-16 rounded-full border-[4px] border-[#111214] bg-[#111214] relative">
+                                {user.discordAvatar ? (
+                                    <img src={user.discordAvatar} alt="Discord" className="w-full h-full rounded-full" />
+                                ) : (
+                                    <div className="w-full h-full rounded-full bg-[#5865F2] flex items-center justify-center">
+                                        <FaDiscord className="text-white w-8 h-8" />
+                                    </div>
+                                )}
+                                {/* Status Indicator (Mocked as online since we can't get real-time without bot in guild) */}
+                                <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-[3px] border-[#111214] rounded-full" title="Online"></div>
+                            </div>
+                        </div>
+
+                        {/* Info */}
+                        <div className="pt-9 text-left">
+                            <div className="flex items-center gap-1">
+                                <h3 className="text-white font-bold text-lg leading-tight">
+                                    {user.discordGlobalName || user.discordUsername}
+                                </h3>
+                            </div>
+                            <p className="text-[#949BA4] text-sm font-medium">
+                                {user.discordUsername}
+                            </p>
+                            
+                            {/* Custom Status / Bio (if we had it, for now just a badge) */}
+                            <div className="mt-2 flex items-center gap-2">
+                                <div className="px-2 py-0.5 rounded bg-[#5865F2]/10 text-[#5865F2] text-xs font-bold uppercase tracking-wider">
+                                    Discord Connected
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         )}
 
         {/* Badges */}
         {badges && badges.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-2 mt-2">
+          <div className="flex flex-wrap justify-center gap-2 mt-4">
             {badges.map((badge) => (
               <div 
                 key={badge._id} 
@@ -94,7 +136,7 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
         )}
 
         {user.title && (
-          <p className="text-white/80 font-medium drop-shadow-sm">@{user.username}</p>
+          <p className="text-white/80 font-medium drop-shadow-sm mt-2">@{user.username}</p>
         )}
       </motion.div>
 

@@ -39,7 +39,10 @@ export default function AuthCallback() {
                 sessionToken,
                 discordId: discordData.discordId,
                 discordUsername: discordData.username,
+                discordGlobalName: discordData.global_name,
                 discordAvatar: discordData.avatar || undefined,
+                discordBanner: discordData.banner || undefined,
+                discordAccentColor: discordData.accent_color?.toString(),
             });
             toast.success("Discord connected successfully!");
             navigate("/dashboard");

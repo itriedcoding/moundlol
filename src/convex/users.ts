@@ -243,6 +243,9 @@ export const linkDiscordAccount = mutation({
     discordId: v.string(),
     discordUsername: v.string(),
     discordAvatar: v.optional(v.string()),
+    discordGlobalName: v.optional(v.string()),
+    discordBanner: v.optional(v.string()),
+    discordAccentColor: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db
@@ -265,7 +268,10 @@ export const linkDiscordAccount = mutation({
     await ctx.db.patch(user._id, {
       discordId: args.discordId,
       discordUsername: args.discordUsername,
+      discordGlobalName: args.discordGlobalName,
       discordAvatar: args.discordAvatar,
+      discordBanner: args.discordBanner,
+      discordAccentColor: args.discordAccentColor ? `#${Number(args.discordAccentColor).toString(16)}` : undefined,
       showDiscordPresence: true, // Default to true
     });
 
@@ -286,7 +292,10 @@ export const unlinkDiscordAccount = mutation({
         await ctx.db.patch(user._id, {
             discordId: undefined,
             discordUsername: undefined,
+            discordGlobalName: undefined,
             discordAvatar: undefined,
+            discordBanner: undefined,
+            discordAccentColor: undefined,
             showDiscordPresence: undefined,
         });
     }
