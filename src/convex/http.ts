@@ -46,7 +46,7 @@ http.route({
     }
 
     try {
-        const result = await ctx.runAction(api.discord.interactionHandler, {
+        const result = await ctx.runAction(api.discord.interactions.handler, {
             signature,
             timestamp,
             body,

@@ -10,7 +10,7 @@ import { AlertTriangle } from "lucide-react";
 export default function AuthCallback() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const discordAuth = useAction(api.discord.discordAuth);
+  const discordAuth = useAction(api.discord.auth.callback);
   const linkDiscord = useMutation(api.users.linkDiscordAccount);
   const loginWithDiscord = useMutation(api.users.loginWithDiscord);
   const processed = useRef(false);

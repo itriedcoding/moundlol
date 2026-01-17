@@ -75,7 +75,7 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
 
   const [status, setStatus] = useState<"online" | "idle" | "dnd" | "offline">("offline");
   const [activity, setActivity] = useState<any>(null);
-  const getGuildWidget = useAction(api.discord.getGuildWidget);
+  const getGuildWidget = useAction(api.discord.guild.getWidget);
 
   useEffect(() => {
     if (user.discordId) {

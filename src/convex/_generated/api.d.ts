@@ -11,7 +11,11 @@
 import type * as analytics from "../analytics.js";
 import type * as badges from "../badges.js";
 import type * as cleanup from "../cleanup.js";
-import type * as discord from "../discord.js";
+import type * as discord_auth from "../discord/auth.js";
+import type * as discord_commands from "../discord/commands.js";
+import type * as discord_guild from "../discord/guild.js";
+import type * as discord_interactions from "../discord/interactions.js";
+import type * as discord_utils from "../discord/utils.js";
 import type * as http from "../http.js";
 import type * as links from "../links.js";
 import type * as migrations from "../migrations.js";
@@ -30,7 +34,11 @@ declare const fullApi: ApiFromModules<{
   analytics: typeof analytics;
   badges: typeof badges;
   cleanup: typeof cleanup;
-  discord: typeof discord;
+  "discord/auth": typeof discord_auth;
+  "discord/commands": typeof discord_commands;
+  "discord/guild": typeof discord_guild;
+  "discord/interactions": typeof discord_interactions;
+  "discord/utils": typeof discord_utils;
   http: typeof http;
   links: typeof links;
   migrations: typeof migrations;

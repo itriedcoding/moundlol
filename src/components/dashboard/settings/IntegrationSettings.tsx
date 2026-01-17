@@ -33,9 +33,9 @@ export function IntegrationSettings({
   handleDiscordLogin,
   handleUnlinkDiscord
 }: IntegrationSettingsProps) {
-  const getGuildWidget = useAction(api.discord.getGuildWidget);
-  const getGuildMember = useAction(api.discord.getGuildMember);
-  const registerCommands = useAction(api.discord.registerCommands);
+  const getGuildWidget = useAction(api.discord.guild.getWidget);
+  const getGuildMember = useAction(api.discord.guild.getMember);
+  const registerCommands = useAction(api.discord.commands.register);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
 
