@@ -10,6 +10,7 @@ import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FaDiscord } from "react-icons/fa";
 
 interface ProfileSettingsProps {
   user: any;
@@ -18,6 +19,7 @@ interface ProfileSettingsProps {
 
 export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
   const updateProfile = useMutation(api.users.updateProfile);
+  const unlinkDiscord = useMutation(api.users.unlinkDiscordAccount);
   const [profileData, setProfileData] = useState({
     title: "",
     bio: "",
@@ -54,6 +56,23 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
     } catch (error: any) {
       toast.error(error.message);
     }
+  };
+
+  const handleDiscordLogin = () => {
+    const clientId = "1458362723959181435"; // From user prompt
+    const redirectUri = window.location.origin + "/auth/discord/callback";
+    const scope = "identify";
+    const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${scope}`;
+    window.location.href = url;
+  };
+
+  const handleUnlinkDiscord = async () => {
+      try {
+          await unlinkDiscord({ sessionToken });
+          toast.success("Discord account unlinked");
+      } catch (e: any) {
+          toast.error(e.message);
+      }
   };
 
   return (
@@ -114,6 +133,44 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="pt-8 border-t border-white/5">
+        <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+          <div className="p-2 bg-[#5865F2]/10 rounded-lg">
+            <FaDiscord className="w-5 h-5 text-[#5865F2]" />
+          </div>
+          Discord Integration
+        </h2>
+        <div className="space-y-5">
+            {user.discordId ? (
+                <div className="flex items-center justify-between p-4 bg-[#5865F2]/10 border border-[#5865F2]/20 rounded-xl">
+                    <div className="flex items-center gap-3">
+                        {user.discordAvatar && (
+                            <img src={user.discordAvatar} alt="Discord Avatar" className="w-10 h-10 rounded-full" />
+                        )}
+                        <div>
+                            <p className="font-bold text-white">{user.discordUsername}</p>
+                            <p className="text-xs text-white/60">Connected</p>
+                        </div>
+                    </div>
+                    <Button variant="destructive" size="sm" onClick={handleUnlinkDiscord}>
+                        Unlink
+                    </Button>
+                </div>
+            ) : (
+                <div className="p-6 bg-black/20 border border-white/10 rounded-xl text-center">
+                    <p className="text-muted-foreground mb-4">Connect your Discord account to display your presence and badges.</p>
+                    <Button 
+                        onClick={handleDiscordLogin}
+                        className="bg-[#5865F2] hover:bg-[#4752c4] text-white"
+                    >
+                        <FaDiscord className="mr-2 w-5 h-5" />
+                        Connect Discord
+                    </Button>
+                </div>
+            )}
         </div>
       </div>
 

@@ -2,92 +2,15 @@ import { useParams, useNavigate } from "react-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { ExternalLink, ArrowLeft, Check, Sparkles, BadgeCheck, Play, Pause, Volume2, VolumeX } from "lucide-react";
-import { 
-  FaTiktok, FaInstagram, FaTwitter, FaYoutube, FaTwitch,
-  FaWhatsapp, FaTelegram, FaDiscord, FaSpotify, FaLinkedin,
-  FaFacebook, FaSnapchat, FaReddit, FaGithub, FaPatreon,
-  FaPinterest, FaTumblr, FaVimeo, FaMedium, FaPaypal
-} from "react-icons/fa";
-import { 
-  SiOnlyfans, SiSoundcloud, SiCashapp, SiVenmo, SiKofi,
-  SiBuymeacoffee, SiSubstack, SiX
-} from "react-icons/si";
-import { Globe, Mail, Link as LinkIcon } from "lucide-react";
-import { useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import { Check, Sparkles, Play, Pause, Volume2, VolumeX, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { setSessionToken } from "@/lib/session";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-const PLATFORM_COLORS: Record<string, string> = {
-  tiktok: "from-[#000000] to-[#00f2ea]",
-  instagram: "from-[#833ab4] via-[#fd1d1d] to-[#fcb045]",
-  twitter: "from-[#1DA1F2] to-[#1a8cd8]",
-  youtube: "from-[#FF0000] to-[#cc0000]",
-  twitch: "from-[#9146FF] to-[#772ce8]",
-  onlyfans: "from-[#00AFF0] to-[#0088cc]",
-  fansly: "from-[#2BDEAC] to-[#1fb589]",
-  whatsapp: "from-[#25D366] to-[#1da851]",
-  telegram: "from-[#0088cc] to-[#006699]",
-  discord: "from-[#5865F2] to-[#4752c4]",
-  spotify: "from-[#1DB954] to-[#17a345]",
-  soundcloud: "from-[#ff8800] to-[#ff5500]",
-  patreon: "from-[#FF424D] to-[#cc353d]",
-  kofi: "from-[#FF5E5B] to-[#e04845]",
-  buymeacoffee: "from-[#FFDD00] to-[#e6c700]",
-  linkedin: "from-[#0077b5] to-[#005885]",
-  facebook: "from-[#1877F2] to-[#0d5dbf]",
-  snapchat: "from-[#FFFC00] to-[#ccca00]",
-  reddit: "from-[#FF4500] to-[#cc3700]",
-  github: "from-[#333333] to-[#1a1a1a]",
-  pinterest: "from-[#E60023] to-[#bd001c]",
-  medium: "from-[#000000] to-[#1a1a1a]",
-  substack: "from-[#FF6719] to-[#e65505]",
-  vimeo: "from-[#1ab7ea] to-[#1596c9]",
-  tumblr: "from-[#35465c] to-[#2a3849]",
-  paypal: "from-[#00457C] to-[#003366]",
-  cashapp: "from-[#00C244] to-[#00a038]",
-  venmo: "from-[#008CFF] to-[#0073d1]",
-  website: "from-primary to-primary/80",
-  email: "from-primary to-primary/80",
-  custom: "from-primary to-primary/80",
-};
-
-const PLATFORM_ICONS: Record<string, any> = {
-  tiktok: FaTiktok,
-  instagram: FaInstagram,
-  twitter: SiX,
-  youtube: FaYoutube,
-  twitch: FaTwitch,
-  onlyfans: SiOnlyfans,
-  whatsapp: FaWhatsapp,
-  telegram: FaTelegram,
-  discord: FaDiscord,
-  spotify: FaSpotify,
-  soundcloud: SiSoundcloud,
-  patreon: FaPatreon,
-  kofi: SiKofi,
-  buymeacoffee: SiBuymeacoffee,
-  linkedin: FaLinkedin,
-  facebook: FaFacebook,
-  snapchat: FaSnapchat,
-  reddit: FaReddit,
-  github: FaGithub,
-  pinterest: FaPinterest,
-  medium: FaMedium,
-  substack: SiSubstack,
-  vimeo: FaVimeo,
-  tumblr: FaTumblr,
-  paypal: FaPaypal,
-  cashapp: SiCashapp,
-  venmo: SiVenmo,
-  website: Globe,
-  email: Mail,
-  custom: LinkIcon,
-};
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { ProfileLinks } from "@/components/profile/ProfileLinks";
 
 export default function Profile() {
   const { username } = useParams<{ username: string }>();
@@ -298,25 +221,6 @@ export default function Profile() {
     return {}; // Default handled by CSS
   };
 
-  const getButtonStyle = (platform: string) => {
-    const base = "w-full p-4 flex items-center justify-between transition-all duration-300 group relative overflow-hidden";
-    const shape = user.buttonStyle === "square" ? "rounded-none" : 
-                 user.buttonStyle === "pill" ? "rounded-full" : 
-                 "rounded-2xl"; // Default rounded
-    
-    const gradientClass = PLATFORM_COLORS[platform] || PLATFORM_COLORS.custom;
-    
-    if (user.buttonStyle === "neumorphic") {
-      return `${base} ${shape} bg-background shadow-[5px_5px_10px_#0a0a0a,-5px_-5px_10px_#262626] hover:shadow-[inset_5px_5px_10px_#0a0a0a,inset_-5px_-5px_10px_#262626] text-foreground border border-white/5`;
-    }
-    
-    if (user.buttonStyle === "glass") {
-      return `${base} ${shape} bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white`;
-    }
-
-    return `${base} ${shape} bg-gradient-to-r ${gradientClass} text-white shadow-lg hover:shadow-xl hover:-translate-y-1`;
-  };
-
   return (
     <div 
       className="min-h-screen bg-background relative overflow-x-hidden transition-colors duration-500"
@@ -353,140 +257,8 @@ export default function Profile() {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto">
-          {/* Profile Header */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-8"
-          >
-            {/* Profile Picture */}
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.5, type: "spring" }}
-              className="w-32 h-32 mx-auto mb-6 rounded-full p-1 bg-gradient-to-br from-primary to-primary/50 glow-pink-lg relative"
-            >
-              <div className="w-full h-full rounded-full overflow-hidden bg-background">
-                {user.profilePicture ? (
-                  <img
-                    src={user.profilePicture}
-                    alt={user.username}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-muted text-5xl font-bold">
-                    {user.username[0].toUpperCase()}
-                  </div>
-                )}
-              </div>
-              {user.verified && (
-                <div className="absolute bottom-0 right-0 bg-background rounded-full p-1 text-primary shadow-lg">
-                  <BadgeCheck className="w-6 h-6 fill-primary text-background" />
-                </div>
-              )}
-            </motion.div>
-
-            {/* Username & Badges */}
-            <motion.div
-              initial={{ y: 10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="flex flex-col items-center gap-2"
-            >
-              <h1 className="text-3xl font-bold flex items-center gap-2 text-white drop-shadow-md">
-                {user.title || `@${user.username}`}
-              </h1>
-              
-              {/* Badges */}
-              {badges && badges.length > 0 && (
-                <div className="flex flex-wrap justify-center gap-2 mt-2">
-                  {badges.map((badge) => (
-                    <div 
-                      key={badge._id} 
-                      className="group relative"
-                      title={badge.name}
-                    >
-                      <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-lg cursor-help transition-transform hover:scale-110">
-                        {badge.icon.startsWith("http") ? (
-                          <img src={badge.icon} alt={badge.name} className="w-5 h-5 object-contain" />
-                        ) : (
-                          <span>{badge.icon}</span>
-                        )}
-                      </div>
-                      {/* Tooltip */}
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-black/90 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                        <p className="font-bold">{badge.name}</p>
-                        <p className="text-gray-300">{badge.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {user.title && (
-                <p className="text-white/80 font-medium drop-shadow-sm">@{user.username}</p>
-              )}
-            </motion.div>
-
-            {/* Bio */}
-            {user.bio && (
-              <motion.p
-                initial={{ y: 10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="text-white/90 max-w-md mx-auto mt-4 font-medium drop-shadow-sm"
-              >
-                {user.bio}
-              </motion.p>
-            )}
-          </motion.div>
-
-          {/* Links */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="space-y-4"
-          >
-            {links && links.length === 0 && (
-              <div className="text-center py-12 text-white/60 bg-black/20 backdrop-blur-sm rounded-2xl border border-white/10">
-                <p>No links added yet</p>
-              </div>
-            )}
-
-            {links?.map((link, index) => {
-              const Icon = PLATFORM_ICONS[link.platform] || PLATFORM_ICONS.custom;
-
-              return (
-                <motion.button
-                  key={link._id}
-                  initial={{ y: 20, opacity: 0, scale: 0.95 }}
-                  animate={{ y: 0, opacity: 1, scale: 1 }}
-                  transition={{
-                    delay: 0.5 + index * 0.1,
-                    type: "spring",
-                    stiffness: 200,
-                  }}
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleLinkClick(link._id, link.url)}
-                  className={getButtonStyle(link.platform)}
-                >
-                  {/* Animated background effect */}
-                  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300" />
-
-                  <div className="flex items-center gap-4 relative z-10">
-                    <div className="text-2xl">
-                      <Icon />
-                    </div>
-                    <span className="text-left font-semibold">{link.title}</span>
-                  </div>
-                  <ExternalLink className="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity relative z-10" />
-                </motion.button>
-              );
-            })}
-          </motion.div>
+          <ProfileHeader user={user} badges={badges || []} />
+          <ProfileLinks links={links || []} user={user} onLinkClick={handleLinkClick} />
 
           {/* Footer */}
           <motion.div

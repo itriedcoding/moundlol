@@ -218,3 +218,58 @@ export const updateCustomColors = mutation({
     return { success: true };
   },
 });
+
+export const linkDiscordAccount = mutation({
+  args: {
+    sessionToken: v.string(),
+    discordId: v.string(),
+    discordUsername: v.string(),
+    discordAvatar: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_session", (q) => q.eq("sessionToken", args.sessionToken))
+      .unique();
+
+    if (!user) throw new Error("Unauthorized");
+
+    // Check if discord ID is already used by another user
+    const existing = await ctx.db
+        .query("users")
+        .withIndex("by_discord_id", (q) => q.eq("discordId", args.discordId))
+        .unique();
+    
+    if (existing && existing._id !== user._id) {
+        throw new Error("This Discord account is already linked to another user.");
+    }
+
+    await ctx.db.patch(user._id, {
+      discordId: args.discordId,
+      discordUsername: args.discordUsername,
+      discordAvatar: args.discordAvatar,
+      showDiscordPresence: true, // Default to true
+    });
+
+    return { success: true };
+  },
+});
+
+export const unlinkDiscordAccount = mutation({
+    args: { sessionToken: v.string() },
+    handler: async (ctx, args) => {
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_session", (q) => q.eq("sessionToken", args.sessionToken))
+            .unique();
+
+        if (!user) throw new Error("Unauthorized");
+
+        await ctx.db.patch(user._id, {
+            discordId: undefined,
+            discordUsername: undefined,
+            discordAvatar: undefined,
+            showDiscordPresence: undefined,
+        });
+    }
+});

@@ -16,6 +16,7 @@ const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Terms = lazy(() => import("./pages/Terms.tsx"));
 const Privacy = lazy(() => import("./pages/Privacy.tsx"));
 const Status = lazy(() => import("./pages/Status.tsx"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback.tsx"));
 
 // Simple loading fallback for route transitions
 function RouteLoading() {
@@ -70,10 +71,11 @@ createRoot(document.getElementById("root")!).render(
           <Suspense fallback={<RouteLoading />}>
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/status" element={<Status />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
-              <Route path="/status" element={<Status />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/auth/discord/callback" element={<AuthCallback />} />
               <Route path="/:username" element={<Profile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

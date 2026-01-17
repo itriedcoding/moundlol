@@ -18,25 +18,31 @@ export default defineSchema({
     ),
     isPublished: v.boolean(),
     viewCount: v.number(),
-    sessionToken: v.optional(v.string()), // Simple session token instead of auth
-    tokenIdentifier: v.optional(v.string()), // Legacy field for backwards compatibility
+    sessionToken: v.optional(v.string()),
+    tokenIdentifier: v.optional(v.string()),
     customDomain: v.optional(v.string()),
-    password: v.optional(v.string()), // For password-protected profiles
+    password: v.optional(v.string()),
     seoTitle: v.optional(v.string()),
     seoDescription: v.optional(v.string()),
     customCss: v.optional(v.string()),
-    backgroundType: v.optional(v.string()), // "solid", "gradient", "animated", "video", "image"
-    backgroundValue: v.optional(v.string()), // Hex, gradient string, or URL
-    buttonStyle: v.optional(v.string()), // "rounded", "square", "pill", "neumorphic", "glass"
+    backgroundType: v.optional(v.string()),
+    backgroundValue: v.optional(v.string()),
+    buttonStyle: v.optional(v.string()),
     font: v.optional(v.string()),
     showSocialProof: v.optional(v.boolean()),
     verified: v.optional(v.boolean()),
-    audioUrl: v.optional(v.string()), // Background audio
+    audioUrl: v.optional(v.string()),
     audioAutoPlay: v.optional(v.boolean()),
+    // Discord Integration
+    discordId: v.optional(v.string()),
+    discordUsername: v.optional(v.string()),
+    discordAvatar: v.optional(v.string()),
+    showDiscordPresence: v.optional(v.boolean()),
   })
     .index("by_username", ["username"])
     .index("by_session", ["sessionToken"])
-    .index("by_domain", ["customDomain"]),
+    .index("by_domain", ["customDomain"])
+    .index("by_discord_id", ["discordId"]),
 
   links: defineTable({
     userId: v.id("users"),
