@@ -18,6 +18,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     window.location.href = url;
   };
 
+  const redirectUri = window.location.origin + "/auth/discord/callback";
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-black/90 border-white/10 backdrop-blur-xl text-white sm:max-w-[425px]">
@@ -36,6 +38,15 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <p className="text-center text-sm text-muted-foreground">
             Please ensure you have linked your Discord account to your profile.
           </p>
+
+          <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+            <p className="text-xs text-muted-foreground text-center mb-1">
+              Developer Note: Add this Redirect URI to Discord:
+            </p>
+            <p className="text-xs font-mono text-center break-all select-all text-primary">
+              {redirectUri}
+            </p>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
