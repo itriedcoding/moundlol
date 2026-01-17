@@ -34,31 +34,42 @@ export function IntegrationSettings({
   handleUnlinkDiscord
 }: IntegrationSettingsProps) {
   const getGuildWidget = useAction(api.discord.getGuildWidget);
+  const getGuildMember = useAction(api.discord.getGuildMember);
   const [isVerifying, setIsVerifying] = useState(false);
 
   const handleVerifyWidget = async () => {
     setIsVerifying(true);
     try {
-        const data = await getGuildWidget({ guildId: OFFICIAL_GUILD_ID });
-        
-        if (!data) {
-            toast.error("System Error: Could not fetch official server widget.");
-            return;
-        }
-        
-        if (!data.members) {
-             toast.error("Widget fetched but no members list found.");
-             return;
+        // 1. Try Widget First (Public, shows status)
+        const widgetData = await getGuildWidget({ guildId: OFFICIAL_GUILD_ID });
+        let foundInWidget = false;
+        let widgetMember = null;
+
+        if (widgetData && widgetData.members) {
+             widgetMember = widgetData.members.find((m: any) => m.id === user.discordId);
+             if (widgetMember) {
+                 foundInWidget = true;
+             }
         }
 
-        const member = data.members.find((m: any) => m.id === user.discordId);
-        
-        if (member) {
-            toast.success(`Success! Found you as ${member.status} (${member.game ? "Playing " + member.game.name : "No Activity"})`);
-        } else {
-            toast.warning("You were not found in the official server widget. Please make sure you have joined the server and are online/idle/dnd (not invisible).");
+        if (foundInWidget && widgetMember) {
+            toast.success(`Success! Found you as ${widgetMember.status} (${widgetMember.game ? "Playing " + widgetMember.game.name : "No Activity"})`);
+            return;
         }
+
+        // 2. If not in widget, try Bot API (Private, confirms membership)
+        toast.info("Not found in public widget, checking server membership via Bot API...");
+        const memberData = await getGuildMember({ guildId: OFFICIAL_GUILD_ID, userId: user.discordId });
+
+        if (memberData) {
+            toast.success("Verified! You are a member of the official server.");
+            toast.warning("Note: You are not visible in the public Widget list. This means your status (Online/Idle) might not appear on your profile. Ensure you are not 'Invisible' and that the server widget is configured to show you.");
+        } else {
+            toast.error("You were not found in the official server. Please join the server to enable status features.");
+        }
+
     } catch (e) {
+        console.error(e);
         toast.error("Failed to verify status connection");
     } finally {
         setIsVerifying(false);
