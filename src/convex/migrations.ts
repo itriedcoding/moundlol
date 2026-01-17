@@ -1,5 +1,16 @@
 import { internalMutation } from "./_generated/server";
 
+export const deleteAllLinks = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const links = await ctx.db.query("links").collect();
+    for (const link of links) {
+      await ctx.db.delete(link._id);
+    }
+    return { count: links.length };
+  },
+});
+
 export const removeEmailField = internalMutation({
   args: {},
   handler: async (ctx) => {
