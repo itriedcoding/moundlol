@@ -59,7 +59,11 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
   };
 
   const handleDiscordLogin = () => {
-    const clientId = "1458362723959181435"; // From user prompt
+    const clientId = import.meta.env.VITE_DISCORD_CLIENT_ID;
+    if (!clientId) {
+        toast.error("Discord Client ID is not configured in environment variables");
+        return;
+    }
     const redirectUri = window.location.origin + "/auth/discord/callback";
     const scope = "identify";
     const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${scope}`;

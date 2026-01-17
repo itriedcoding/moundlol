@@ -56,7 +56,11 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
         {/* Discord Presence */}
         {user.showDiscordPresence && user.discordUsername && (
             <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#5865F2]/20 border border-[#5865F2]/30 text-white/90 text-sm backdrop-blur-sm">
-                <FaDiscord className="text-[#5865F2]" />
+                {user.discordAvatar ? (
+                    <img src={user.discordAvatar} alt="Discord" className="w-4 h-4 rounded-full" />
+                ) : (
+                    <FaDiscord className="text-[#5865F2]" />
+                )}
                 <span>{user.discordUsername}</span>
                 {/* We could add a status indicator here if we had real-time presence */}
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse ml-1" title="Linked"></span>
