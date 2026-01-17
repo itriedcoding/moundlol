@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Settings, Image as ImageIcon, Music, Palette } from "lucide-react";
+import { Settings, Image as ImageIcon, Music, Palette, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useMutation } from "convex/react";
@@ -30,6 +30,11 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
     audioUrl: "",
     audioAutoPlay: false,
   });
+  const [passwordData, setPasswordData] = useState({
+    password: "",
+    confirmPassword: "",
+  });
+  const setPassword = useMutation(api.users.setPassword);
 
   useEffect(() => {
     if (user) {
@@ -77,6 +82,28 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
       } catch (e: any) {
           toast.error(e.message);
       }
+  };
+
+  const handleSetPassword = async () => {
+    if (passwordData.password.length < 6) {
+        toast.error("Password must be at least 6 characters");
+        return;
+    }
+    if (passwordData.password !== passwordData.confirmPassword) {
+        toast.error("Passwords do not match");
+        return;
+    }
+
+    try {
+        await setPassword({
+            sessionToken,
+            password: passwordData.password,
+        });
+        toast.success("Password updated successfully");
+        setPasswordData({ password: "", confirmPassword: "" });
+    } catch (e: any) {
+        toast.error(e.message);
+    }
   };
 
   return (
@@ -175,6 +202,48 @@ export function ProfileSettings({ user, sessionToken }: ProfileSettingsProps) {
                     </Button>
                 </div>
             )}
+        </div>
+      </div>
+
+      <div className="pt-8 border-t border-white/5">
+        <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+          <div className="p-2 bg-red-500/10 rounded-lg">
+            <Lock className="w-5 h-5 text-red-400" />
+          </div>
+          Security
+        </h2>
+        <div className="space-y-5">
+            <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                    <Label htmlFor="new-password" className="text-muted-foreground">New Password</Label>
+                    <Input
+                        id="new-password"
+                        type="password"
+                        value={passwordData.password}
+                        onChange={(e) => setPasswordData({ ...passwordData, password: e.target.value })}
+                        placeholder="••••••••"
+                        className="mt-2 bg-black/20 border-white/10 focus:border-primary/50"
+                    />
+                </div>
+                <div>
+                    <Label htmlFor="confirm-password" className="text-muted-foreground">Confirm Password</Label>
+                    <Input
+                        id="confirm-password"
+                        type="password"
+                        value={passwordData.confirmPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                        placeholder="••••••••"
+                        className="mt-2 bg-black/20 border-white/10 focus:border-primary/50"
+                    />
+                </div>
+            </div>
+            <Button 
+                onClick={handleSetPassword}
+                disabled={!passwordData.password}
+                className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
+            >
+                Update Password
+            </Button>
         </div>
       </div>
 

@@ -184,6 +184,43 @@ export const verifyPassword = query({
   },
 });
 
+export const login = mutation({
+  args: {
+    username: v.string(),
+    password: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_username", (q) => q.eq("username", args.username.toLowerCase().trim()))
+      .unique();
+
+    if (!user || !user.password || user.password !== args.password) {
+      throw new Error("Invalid username or password");
+    }
+
+    return { sessionToken: user.sessionToken };
+  },
+});
+
+export const loginWithDiscord = mutation({
+  args: {
+    discordId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_discord_id", (q) => q.eq("discordId", args.discordId))
+      .unique();
+
+    if (!user) {
+      throw new Error("No account linked to this Discord user");
+    }
+
+    return { sessionToken: user.sessionToken };
+  },
+});
+
 export const generateQRCode = query({
   args: { username: v.string() },
   handler: async (ctx, args) => {

@@ -1,17 +1,22 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useAction, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
-import { getSessionToken } from "@/lib/session";
+import { getSessionToken, setSessionToken } from "@/lib/session";
 
 export default function AuthCallback() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const discordAuth = useAction(api.discord.discordAuth);
   const linkDiscord = useMutation(api.users.linkDiscordAccount);
+  const loginWithDiscord = useMutation(api.users.loginWithDiscord);
+  const processed = useRef(false);
 
   useEffect(() => {
+    if (processed.current) return;
+    processed.current = true;
+
     const code = searchParams.get("code");
     const sessionToken = getSessionToken();
 
@@ -20,26 +25,37 @@ export default function AuthCallback() {
       return;
     }
 
-    if (!sessionToken) {
-        toast.error("Please log in first");
-        navigate("/");
-        return;
-    }
-
     const handleAuth = async () => {
       try {
         const redirectUri = window.location.origin + "/auth/discord/callback";
         const discordData = await discordAuth({ code, redirectUri });
         
-        await linkDiscord({
-            sessionToken,
-            discordId: discordData.discordId,
-            discordUsername: discordData.username,
-            discordAvatar: discordData.avatar || undefined,
-        });
-
-        toast.success("Discord connected successfully!");
-        navigate("/dashboard");
+        if (sessionToken) {
+            // Link account
+            await linkDiscord({
+                sessionToken,
+                discordId: discordData.discordId,
+                discordUsername: discordData.username,
+                discordAvatar: discordData.avatar || undefined,
+            });
+            toast.success("Discord connected successfully!");
+            navigate("/dashboard");
+        } else {
+            // Login
+            try {
+                const result = await loginWithDiscord({ discordId: discordData.discordId });
+                if (result?.sessionToken) {
+                    setSessionToken(result.sessionToken);
+                    toast.success("Logged in with Discord!");
+                    // Force a reload to ensure auth state updates
+                    window.location.href = "/dashboard";
+                }
+            } catch (loginError: any) {
+                console.error(loginError);
+                toast.error("No account found linked to this Discord. Please sign up or log in first.");
+                navigate("/");
+            }
+        }
       } catch (error: any) {
         console.error(error);
         toast.error("Failed to connect Discord: " + error.message);
@@ -48,7 +64,7 @@ export default function AuthCallback() {
     };
 
     handleAuth();
-  }, [searchParams, navigate, discordAuth, linkDiscord]);
+  }, [searchParams, navigate, discordAuth, linkDiscord, loginWithDiscord]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white">
