@@ -5,6 +5,7 @@ import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { StrictMode, useEffect, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
+import { CookieConsent } from "@/components/CookieConsent";
 import "./index.css";
 import "./types/global.d.ts";
 
@@ -80,6 +81,7 @@ createRoot(document.getElementById("root")!).render(
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
+          <CookieConsent />
         </BrowserRouter>
         <Toaster />
       </ConvexProvider>
