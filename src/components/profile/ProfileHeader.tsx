@@ -8,7 +8,7 @@ interface ProfileHeaderProps {
   badges: any[];
 }
 
-// Discord Badge Flags
+// Discord Badge Flags (Updated for 2026 Standards)
 const DISCORD_FLAGS = {
   STAFF: 1 << 0,
   PARTNER: 1 << 1,
@@ -27,26 +27,39 @@ const DISCORD_FLAGS = {
   ACTIVE_DEVELOPER: 1 << 22,
 };
 
-const getDiscordBadges = (flags: number) => {
+const getDiscordBadges = (flags: number, premiumType?: number) => {
   const badges = [];
+  
+  // Standard Flags
   if (flags & DISCORD_FLAGS.STAFF) badges.push({ name: "Discord Staff", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/discordstaff.svg" });
   if (flags & DISCORD_FLAGS.PARTNER) badges.push({ name: "Partnered Server Owner", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/discordpartner.svg" });
+  if (flags & DISCORD_FLAGS.CERTIFIED_MODERATOR) badges.push({ name: "Moderator Programs Alumni", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/discordcertifiedmoderator.svg" });
   if (flags & DISCORD_FLAGS.HYPESQUAD) badges.push({ name: "HypeSquad Events", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/hypesquad.svg" });
-  if (flags & DISCORD_FLAGS.BUG_HUNTER_LEVEL_1) badges.push({ name: "Bug Hunter Level 1", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/bughunter1.svg" });
   if (flags & DISCORD_FLAGS.HYPESQUAD_ONLINE_HOUSE_1) badges.push({ name: "HypeSquad Bravery", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/hypesquadbravery.svg" });
   if (flags & DISCORD_FLAGS.HYPESQUAD_ONLINE_HOUSE_2) badges.push({ name: "HypeSquad Brilliance", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/hypesquadbrilliance.svg" });
   if (flags & DISCORD_FLAGS.HYPESQUAD_ONLINE_HOUSE_3) badges.push({ name: "HypeSquad Balance", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/hypesquadbalance.svg" });
-  if (flags & DISCORD_FLAGS.PREMIUM_EARLY_SUPPORTER) badges.push({ name: "Early Supporter", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/earlysupporter.svg" });
+  if (flags & DISCORD_FLAGS.BUG_HUNTER_LEVEL_1) badges.push({ name: "Bug Hunter Level 1", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/bughunter1.svg" });
   if (flags & DISCORD_FLAGS.BUG_HUNTER_LEVEL_2) badges.push({ name: "Bug Hunter Level 2", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/bughunter2.svg" });
   if (flags & DISCORD_FLAGS.ACTIVE_DEVELOPER) badges.push({ name: "Active Developer", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/activedeveloper.svg" });
   if (flags & DISCORD_FLAGS.VERIFIED_DEVELOPER) badges.push({ name: "Early Verified Bot Developer", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/earlyverifiedbotdeveloper.svg" });
-  if (flags & DISCORD_FLAGS.CERTIFIED_MODERATOR) badges.push({ name: "Moderator Programs Alumni", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/discordcertifiedmoderator.svg" });
+  if (flags & DISCORD_FLAGS.PREMIUM_EARLY_SUPPORTER) badges.push({ name: "Early Supporter", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/earlysupporter.svg" });
+
+  // Nitro Badges (Derived from premium_type)
+  if (premiumType === 1) {
+    badges.push({ name: "Nitro Classic", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/nitro.svg" });
+  } else if (premiumType === 2) {
+    badges.push({ name: "Nitro", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/nitro.svg" });
+  } else if (premiumType === 3) {
+    badges.push({ name: "Nitro Basic", icon: "https://raw.githubusercontent.com/mezotv/discord-badges/master/assets/nitro.svg" });
+  }
   
   return badges;
 };
 
 export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
-  const discordBadges = user.discordPublicFlags ? getDiscordBadges(user.discordPublicFlags) : [];
+  const discordBadges = user.discordPublicFlags || user.discordPremiumType 
+    ? getDiscordBadges(user.discordPublicFlags || 0, user.discordPremiumType) 
+    : [];
 
   return (
     <motion.div
@@ -111,19 +124,26 @@ export function ProfileHeader({ user, badges }: ProfileHeaderProps) {
                     />
                     
                     <div className="px-5 pb-5 relative">
-                        {/* Avatar */}
+                        {/* Avatar & Decoration */}
                         <div className="absolute -top-[40px] left-5">
-                            <div className="w-[80px] h-[80px] rounded-full border-[6px] border-[#111214] bg-[#111214] relative">
-                                {user.discordAvatar ? (
-                                    <img src={user.discordAvatar} alt="Discord" className="w-full h-full rounded-full" />
-                                ) : (
-                                    <div className="w-full h-full rounded-full bg-[#5865F2] flex items-center justify-center">
-                                        <FaDiscord className="text-white w-10 h-10" />
-                                    </div>
+                            <div className="relative">
+                                <div className="w-[80px] h-[80px] rounded-full border-[6px] border-[#111214] bg-[#111214] relative z-10">
+                                    {user.discordAvatar ? (
+                                        <img src={user.discordAvatar} alt="Discord" className="w-full h-full rounded-full" />
+                                    ) : (
+                                        <div className="w-full h-full rounded-full bg-[#5865F2] flex items-center justify-center">
+                                            <FaDiscord className="text-white w-10 h-10" />
+                                        </div>
+                                    )}
+                                </div>
+                                {/* Avatar Decoration */}
+                                {user.discordAvatarDecoration && (
+                                    <img 
+                                        src={user.discordAvatarDecoration} 
+                                        alt="Decoration" 
+                                        className="absolute -top-[8px] -left-[8px] w-[96px] h-[96px] z-20 pointer-events-none"
+                                    />
                                 )}
-                                {/* Status Indicator - Only show if we had real status, but we don't. 
-                                    So we omit it to avoid "fake" data. 
-                                */}
                             </div>
                         </div>
 

@@ -247,6 +247,8 @@ export const linkDiscordAccount = mutation({
     discordBanner: v.optional(v.string()),
     discordAccentColor: v.optional(v.string()),
     discordPublicFlags: v.optional(v.number()),
+    discordPremiumType: v.optional(v.number()),
+    discordAvatarDecoration: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db
@@ -274,6 +276,8 @@ export const linkDiscordAccount = mutation({
       discordBanner: args.discordBanner,
       discordAccentColor: args.discordAccentColor ? `#${Number(args.discordAccentColor).toString(16)}` : undefined,
       discordPublicFlags: args.discordPublicFlags,
+      discordPremiumType: args.discordPremiumType,
+      discordAvatarDecoration: args.discordAvatarDecoration,
       showDiscordPresence: true, // Default to true
     });
 
@@ -299,6 +303,9 @@ export const unlinkDiscordAccount = mutation({
             discordBanner: undefined,
             discordAccentColor: undefined,
             showDiscordPresence: undefined,
+            discordPublicFlags: undefined,
+            discordPremiumType: undefined,
+            discordAvatarDecoration: undefined,
         });
     }
 });

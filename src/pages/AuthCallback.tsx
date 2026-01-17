@@ -44,6 +44,8 @@ export default function AuthCallback() {
                 discordBanner: discordData.banner || undefined,
                 discordAccentColor: discordData.accent_color?.toString(),
                 discordPublicFlags: discordData.public_flags,
+                discordPremiumType: discordData.premium_type,
+                discordAvatarDecoration: discordData.avatar_decoration || undefined,
             });
             toast.success("Discord connected successfully!");
             navigate("/dashboard");

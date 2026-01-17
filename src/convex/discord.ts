@@ -323,6 +323,10 @@ export const discordAuth = action({
             accent_color: userData.accent_color,
             discriminator: userData.discriminator,
             public_flags: userData.public_flags,
+            premium_type: userData.premium_type,
+            avatar_decoration: userData.avatar_decoration_data 
+                ? `https://cdn.discordapp.com/avatar-decoration-presets/${userData.avatar_decoration_data.asset}.png`
+                : null,
         };
     }
 });

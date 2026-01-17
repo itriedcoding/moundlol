@@ -40,6 +40,8 @@ export default defineSchema({
     discordBannerColor: v.optional(v.string()),
     discordAccentColor: v.optional(v.string()),
     discordPublicFlags: v.optional(v.number()),
+    discordPremiumType: v.optional(v.number()), // 0: None, 1: Nitro Classic, 2: Nitro, 3: Nitro Basic
+    discordAvatarDecoration: v.optional(v.string()), // URL to decoration
     showDiscordPresence: v.optional(v.boolean()),
     email: v.optional(v.string()),
     // New Features
