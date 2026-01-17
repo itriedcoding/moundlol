@@ -34,7 +34,11 @@ export default defineSchema({
     // Discord Integration
     discordId: v.optional(v.string()),
     discordUsername: v.optional(v.string()),
+    discordGlobalName: v.optional(v.string()),
     discordAvatar: v.optional(v.string()),
+    discordBanner: v.optional(v.string()),
+    discordBannerColor: v.optional(v.string()),
+    discordAccentColor: v.optional(v.string()),
     showDiscordPresence: v.optional(v.boolean()),
     email: v.optional(v.string()),
     // New Features
