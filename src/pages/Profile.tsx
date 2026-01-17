@@ -2,9 +2,13 @@ import { useParams, useNavigate } from "react-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
-import { ExternalLink, ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ExternalLink, ArrowLeft, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { setSessionToken } from "@/lib/session";
 
 const PLATFORM_COLORS: Record<string, string> = {
   tiktok: "from-[#000000] to-[#00f2ea]",
@@ -13,17 +17,28 @@ const PLATFORM_COLORS: Record<string, string> = {
   youtube: "from-[#FF0000] to-[#cc0000]",
   twitch: "from-[#9146FF] to-[#772ce8]",
   onlyfans: "from-[#00AFF0] to-[#0088cc]",
+  fansly: "from-[#2BDEAC] to-[#1fb589]",
   whatsapp: "from-[#25D366] to-[#1da851]",
   telegram: "from-[#0088cc] to-[#006699]",
   discord: "from-[#5865F2] to-[#4752c4]",
   spotify: "from-[#1DB954] to-[#17a345]",
   soundcloud: "from-[#ff8800] to-[#ff5500]",
   patreon: "from-[#FF424D] to-[#cc353d]",
+  kofi: "from-[#FF5E5B] to-[#e04845]",
+  buymeacoffee: "from-[#FFDD00] to-[#e6c700]",
   linkedin: "from-[#0077b5] to-[#005885]",
   facebook: "from-[#1877F2] to-[#0d5dbf]",
   snapchat: "from-[#FFFC00] to-[#ccca00]",
   reddit: "from-[#FF4500] to-[#cc3700]",
   github: "from-[#333333] to-[#1a1a1a]",
+  pinterest: "from-[#E60023] to-[#bd001c]",
+  medium: "from-[#000000] to-[#1a1a1a]",
+  substack: "from-[#FF6719] to-[#e65505]",
+  vimeo: "from-[#1ab7ea] to-[#1596c9]",
+  tumblr: "from-[#35465c] to-[#2a3849]",
+  paypal: "from-[#00457C] to-[#003366]",
+  cashapp: "from-[#00C244] to-[#00a038]",
+  venmo: "from-[#008CFF] to-[#0073d1]",
   website: "from-primary to-primary/80",
   email: "from-primary to-primary/80",
   custom: "from-primary to-primary/80",
@@ -32,13 +47,38 @@ const PLATFORM_COLORS: Record<string, string> = {
 export default function Profile() {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [isClaiming, setIsClaiming] = useState(false);
+
   const user = useQuery(api.users.getUserByUsername, {
     username: username || "",
   });
   const links = useQuery(api.links.getLinks, { username: username || "" });
+  const claimUsername = useMutation(api.users.claimUsername);
   const incrementView = useMutation(api.users.incrementViewCount);
   const incrementClick = useMutation(api.links.incrementClickCount);
   const trackView = useMutation(api.analytics.trackProfileView);
+
+  const handleClaimUsername = async () => {
+    if (!username) return;
+
+    setIsClaiming(true);
+    try {
+      const result = await claimUsername({
+        username: username.toLowerCase().trim(),
+        email: email || undefined,
+      });
+
+      setSessionToken(result.sessionToken);
+      toast.success(`🎉 Username claimed! Welcome @${username}`);
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to claim username");
+      setIsClaiming(false);
+    }
+  };
 
   useEffect(() => {
     if (user && username) {
@@ -60,23 +100,98 @@ export default function Profile() {
 
   if (!user || !user.isPublished) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden p-4">
+        {/* Background effects */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-primary/10" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,20,147,0.15),transparent_50%)]" />
+
+        {/* Floating blobs */}
+        <motion.div
+          className="absolute top-20 left-10 w-96 h-96 bg-primary/20 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center max-w-md"
+          className="relative z-10 text-center max-w-md w-full bg-card border border-primary/30 rounded-3xl p-8 glow-pink"
         >
-          <div className="text-6xl mb-4">😔</div>
-          <h1 className="text-3xl font-bold mb-2">Profile Not Found</h1>
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", delay: 0.2 }}
+            className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center glow-pink-lg"
+          >
+            <Sparkles className="w-10 h-10 text-white" />
+          </motion.div>
+
+          <h1 className="text-3xl font-bold mb-2">
+            <span className="text-gradient-pink">@{username}</span> is available!
+          </h1>
           <p className="text-muted-foreground mb-6">
-            This username doesn't exist or the profile is not published yet.
+            Claim this username and create your bio link page in seconds.
           </p>
+
+          <div className="space-y-4 mb-6">
+            <div className="text-left">
+              <Label htmlFor="email" className="text-sm text-muted-foreground mb-2 block">
+                Email (optional)
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-background/50 border-primary/30 focus:border-primary"
+              />
+            </div>
+
+            <Button
+              onClick={handleClaimUsername}
+              disabled={isClaiming}
+              className="w-full bg-primary hover:bg-primary/90 text-white text-lg py-6"
+            >
+              {isClaiming ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  Claiming...
+                </>
+              ) : (
+                <>
+                  <Check className="w-5 h-5 mr-2" />
+                  Claim @{username}
+                </>
+              )}
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-primary" />
+              <span>Free forever</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-primary" />
+              <span>No credit card</span>
+            </div>
+          </div>
+
           <Button
+            variant="ghost"
             onClick={() => navigate("/")}
-            className="bg-primary hover:bg-primary/90 text-white"
+            className="mt-6 text-muted-foreground hover:text-primary"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Go Home
+            Back to Home
           </Button>
         </motion.div>
       </div>

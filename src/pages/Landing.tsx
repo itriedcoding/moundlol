@@ -3,9 +3,13 @@ import { Link as LinkIcon, Zap, BarChart3, Sparkles, ArrowRight } from "lucide-r
 import {
   FaTiktok, FaInstagram, FaTwitter, FaYoutube, FaTwitch,
   FaWhatsapp, FaTelegram, FaDiscord, FaSpotify, FaLinkedin,
-  FaFacebook, FaSnapchat, FaReddit, FaGithub, FaPatreon
+  FaFacebook, FaSnapchat, FaReddit, FaGithub, FaPatreon,
+  FaPinterest, FaTumblr, FaVimeo, FaMedium, FaPaypal
 } from "react-icons/fa";
-import { SiOnlyfans, SiSoundcloud } from "react-icons/si";
+import {
+  SiOnlyfans, SiSoundcloud, SiCashapp, SiVenmo, SiKofi,
+  SiBuymeacoffee, SiSubstack, SiX
+} from "react-icons/si";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router";
@@ -40,7 +44,7 @@ export default function Landing() {
   const platforms = [
     { name: "TikTok", icon: FaTiktok, color: "#000000" },
     { name: "Instagram", icon: FaInstagram, color: "#E4405F" },
-    { name: "Twitter", icon: FaTwitter, color: "#1DA1F2" },
+    { name: "X (Twitter)", icon: SiX, color: "#000000" },
     { name: "YouTube", icon: FaYoutube, color: "#FF0000" },
     { name: "Twitch", icon: FaTwitch, color: "#9146FF" },
     { name: "OnlyFans", icon: SiOnlyfans, color: "#00AFF0" },
@@ -50,11 +54,21 @@ export default function Landing() {
     { name: "Spotify", icon: FaSpotify, color: "#1DB954" },
     { name: "SoundCloud", icon: SiSoundcloud, color: "#ff8800" },
     { name: "Patreon", icon: FaPatreon, color: "#FF424D" },
+    { name: "Ko-fi", icon: SiKofi, color: "#FF5E5B" },
+    { name: "Buy Me a Coffee", icon: SiBuymeacoffee, color: "#FFDD00" },
     { name: "LinkedIn", icon: FaLinkedin, color: "#0077b5" },
     { name: "Facebook", icon: FaFacebook, color: "#1877F2" },
     { name: "Snapchat", icon: FaSnapchat, color: "#FFFC00" },
     { name: "Reddit", icon: FaReddit, color: "#FF4500" },
     { name: "GitHub", icon: FaGithub, color: "#333333" },
+    { name: "Pinterest", icon: FaPinterest, color: "#E60023" },
+    { name: "Medium", icon: FaMedium, color: "#000000" },
+    { name: "Substack", icon: SiSubstack, color: "#FF6719" },
+    { name: "Vimeo", icon: FaVimeo, color: "#1ab7ea" },
+    { name: "Tumblr", icon: FaTumblr, color: "#35465c" },
+    { name: "PayPal", icon: FaPaypal, color: "#00457C" },
+    { name: "Cash App", icon: SiCashapp, color: "#00C244" },
+    { name: "Venmo", icon: SiVenmo, color: "#008CFF" },
   ];
 
   return (
