@@ -251,7 +251,7 @@ export const discordAuth = action({
             throw new Error("Configuration Error: Missing DISCORD_CLIENT_ID or DISCORD_CLIENT_SECRET in Convex Dashboard.");
         }
 
-        console.log(`[Discord Auth] Exchanging code with Client ID: ${clientId.substring(0, 4)}... (Length: ${clientId.length})`);
+        console.log(`[Discord Auth] Exchanging code...`);
 
         // Exchange code for token
         // Use Basic Auth for better compatibility and to avoid body parsing issues
@@ -278,19 +278,8 @@ export const discordAuth = action({
                 const errorData = JSON.parse(text);
                 if (errorData.error === 'invalid_client') {
                     errorMessage = `Configuration Error: Discord rejected the Client Credentials.\n\n` +
-                        `DEBUG INFO:\n` +
-                        `- Used Client ID: ${clientId.substring(0, 4)}... (Length: ${clientId.length})\n` +
-                        `- Used Client Secret: ${clientSecret.substring(0, 4)}... (Length: ${clientSecret.length})\n\n` +
-                        `CHECKLIST:\n` +
-                        `1. Ensure 'DISCORD_CLIENT_SECRET' in Convex Dashboard matches 'Client Secret' in Discord Dev Portal > OAuth2.\n` +
-                        `   (Do NOT use the 'Public Key' or 'Bot Token')\n` +
-                        `2. Ensure 'DISCORD_CLIENT_ID' matches 'Application ID'.\n` +
-                        `3. Did you set these in the Convex Dashboard? (.env files are NOT automatically pushed to the cloud backend)\n` +
-                        `4. Try resetting the Client Secret in Discord and updating it in Convex.`;
-                    
-                    if (clientId === clientSecret) {
-                        errorMessage += `\n\n⚠️ CRITICAL: Client ID and Client Secret are IDENTICAL. You likely copy-pasted the ID into the Secret field.`;
-                    }
+                        `Please check your DISCORD_CLIENT_ID and DISCORD_CLIENT_SECRET in the Convex Dashboard.\n` +
+                        `Ensure they match exactly what is in the Discord Developer Portal.`;
                 } else if (errorData.error === 'invalid_grant') {
                     errorMessage = "Authorization Error: The code is invalid or expired. Please try logging in again.";
                 } else if (errorData.error === 'redirect_uri_mismatch') {
