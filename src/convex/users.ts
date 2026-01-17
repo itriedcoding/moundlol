@@ -1,6 +1,12 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+// Helper to clean environment variables
+const cleanEnv = (val: string | undefined) => {
+    if (!val) return undefined;
+    return val.trim().replace(/^["']|["']$/g, '');
+};
+
 // Helper to generate session token
 function generateSessionToken() {
   return Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -9,7 +15,7 @@ function generateSessionToken() {
 export const getDiscordClientId = query({
   args: {},
   handler: async () => {
-    return process.env.DISCORD_CLIENT_ID;
+    return cleanEnv(process.env.DISCORD_CLIENT_ID);
   },
 });
 

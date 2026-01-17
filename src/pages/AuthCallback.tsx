@@ -58,12 +58,9 @@ export default function AuthCallback() {
         }
       } catch (error: any) {
         console.error(error);
-        // More user friendly error display
-        if (error.message.includes("Configuration Error")) {
-             toast.error("System Configuration Error: Please contact the site administrator.");
-        } else {
-             toast.error("Failed to connect Discord. Please try again.");
-        }
+        // Display the full error message received from the server
+        // This ensures the user sees the detailed configuration error if present.
+        toast.error(`Error connecting Discord: ${error.message || "Unknown error"}`, { duration: 10000 });
         navigate("/");
       }
     };
@@ -76,7 +73,7 @@ export default function AuthCallback() {
       <div className="text-center">
         <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p className="text-muted-foreground">Connecting to Discord...</p>
-        <p className="text-xs text-muted-foreground mt-4">Please wait while we verify your account.</p>
+        <p className="text-xs text-muted-foreground mt-4\">Please wait while we verify your account.</p>
       </div>
     </div>
   );

@@ -4,6 +4,12 @@ import { v } from "convex/values";
 import { verifyKey, InteractionType, InteractionResponseType } from "discord-interactions";
 import { api, internal } from "./_generated/api";
 
+// Helper to clean environment variables (remove quotes and whitespace)
+const cleanEnv = (val: string | undefined) => {
+    if (!val) return undefined;
+    return val.trim().replace(/^["']|["']$/g, '');
+};
+
 // Environment variables should be set in the dashboard
 // DISCORD_PUBLIC_KEY, DISCORD_CLIENT_ID, DISCORD_BOT_TOKEN, DISCORD_CLIENT_SECRET
 
@@ -238,10 +244,10 @@ export const registerCommands = internalAction({
 export const discordAuth = action({
     args: { code: v.string(), redirectUri: v.string() },
     handler: async (ctx, args) => {
-        const clientId = process.env.DISCORD_CLIENT_ID?.trim();
-        const clientSecret = process.env.DISCORD_CLIENT_SECRET?.trim();
+        const clientId = cleanEnv(process.env.DISCORD_CLIENT_ID);
+        const clientSecret = cleanEnv(process.env.DISCORD_CLIENT_SECRET);
 
-        if (!clientId || !clientSecret) throw new Error("Missing Discord OAuth credentials in environment variables");
+        if (!clientId || !clientSecret) throw new Error("Configuration Error: Missing Discord OAuth credentials. Please set DISCORD_CLIENT_ID and DISCORD_CLIENT_SECRET in your Convex Dashboard.");
 
         // Exchange code for token
         const tokenResponse = await fetch("https://discord.com/api/oauth2/token", {
@@ -264,7 +270,7 @@ export const discordAuth = action({
             try {
                 const errorData = JSON.parse(text);
                 if (errorData.error === 'invalid_client') {
-                    errorMessage = "Configuration Error: Invalid Discord Client ID or Client Secret. Please check for whitespace or incorrect values in your Environment Variables.";
+                    errorMessage = "Configuration Error: The Discord Client Secret in your Convex Dashboard is invalid or does not match the Client ID. Please check your Integrations tab.";
                 } else if (errorData.error === 'invalid_grant') {
                     errorMessage = "Authorization Error: Invalid or expired code. Please try again.";
                 } else if (errorData.error === 'redirect_uri_mismatch') {
