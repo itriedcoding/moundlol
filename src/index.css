@@ -142,6 +142,10 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+  
+  .glass-card {
+    @apply bg-black/40 backdrop-blur-md border border-white/10;
+  }
 }
 
 /* Custom scrollbar */

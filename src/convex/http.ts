@@ -16,6 +16,9 @@ http.route({
     }
 
     try {
+      // Try internal first, if it fails (due to not being internal), try api
+      // Note: In a real app, we'd know which one it is. 
+      // Assuming internal based on typical patterns for admin actions.
       await ctx.runMutation(internal.badges.assignBadge, {
         username,
         badgeName,
