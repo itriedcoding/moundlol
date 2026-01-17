@@ -328,3 +328,13 @@ export const updatePublishedStatus = mutation({
     await ctx.db.patch(user._id, { isPublished: args.isPublished });
   },
 });
+
+export const getDeploymentUrl = query({
+  args: {},
+  handler: async () => {
+    return {
+      siteUrl: process.env.CONVEX_SITE_URL,
+      cloudUrl: process.env.CONVEX_CLOUD_URL,
+    };
+  },
+});
